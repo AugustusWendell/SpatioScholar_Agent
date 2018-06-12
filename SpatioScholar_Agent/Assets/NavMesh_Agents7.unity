@@ -803,7 +803,6 @@ GameObject:
   - component: {fileID: 67044609}
   - component: {fileID: 67044608}
   - component: {fileID: 67044613}
-  - component: {fileID: 67044614}
   m_Layer: 0
   m_Name: SS_Agent_Controller
   m_TagString: Untagged
@@ -904,27 +903,13 @@ MonoBehaviour:
   m_Target2Button: {fileID: 367755516}
   m_AddAgentButton: {fileID: 1751561742}
   m_ToggleVectorButton: {fileID: 485187904}
+  m_CSV_SaveButton: {fileID: 0}
   controller: {fileID: 67044607}
   target1: {fileID: 11254889}
   target2: {fileID: 1172446707}
-  Agent1: {fileID: 0}
-  Agent2: {fileID: 0}
   SSAgent: {fileID: 1088138057}
+  SS_Agent_Canvas: {fileID: 303542116}
   AgentList: []
---- !u!114 &67044614
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 0}
-  m_GameObject: {fileID: 67044607}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: af3a6bdd6c2474d448a8fc4bb8804389, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  agent1: {fileID: 0}
-  cam: {fileID: 282840813}
-  agent2: {fileID: 0}
 --- !u!1 &73185053
 GameObject:
   m_ObjectHideFlags: 0
@@ -2813,7 +2798,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 4001453437636870, guid: 811dc8026e64d82469e8fc0bf8f35637, type: 2}
       propertyPath: m_LocalPosition.y
-      value: 1.19
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4001453437636870, guid: 811dc8026e64d82469e8fc0bf8f35637, type: 2}
       propertyPath: m_LocalPosition.z
@@ -2857,6 +2842,20 @@ Prefab:
         type: 2}
       propertyPath: m_AnchoredPosition.y
       value: -1.29
+      objectReference: {fileID: 0}
+    - target: {fileID: 114372229386526636, guid: 811dc8026e64d82469e8fc0bf8f35637,
+        type: 2}
+      propertyPath: agent
+      value: 
+      objectReference: {fileID: 1088138057}
+    - target: {fileID: 4403735162028016, guid: 811dc8026e64d82469e8fc0bf8f35637, type: 2}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 224575458391719166, guid: 811dc8026e64d82469e8fc0bf8f35637,
+        type: 2}
+      propertyPath: m_AnchoredPosition.y
+      value: 2.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_ParentPrefab: {fileID: 100100000, guid: 811dc8026e64d82469e8fc0bf8f35637, type: 2}

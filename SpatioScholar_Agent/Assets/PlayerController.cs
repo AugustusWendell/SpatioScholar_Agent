@@ -9,44 +9,64 @@ public class PlayerController : MonoBehaviour {
     public bool vector_render;
     public bool attributes_render;
     public bool attributes_visible;
+    public float sky_exposure;
+    public float temp_sky_exposure;
+    private float hit;
 
-        // Use this for initialization
-        void Start () {
+    // Use this for initialization
+    void Start () {
         //debug
         print("PlayerController initialization");
-	}
+        temp_sky_exposure = 0;
+
+    }
 	
 	// Update is called once per frame
 	void Update () {
+        // Bit shift the index of the layer (8) to get a bit mask
+        int layerMask = 1 << 8;
+
+        // This would cast rays only against colliders in layer 8.
+        // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+        layerMask = ~layerMask;
+
+
+
 
         //Test RayTrace Code
-        int raynumber = 10;
+        int raycount = 20;
+        int raynumber = raycount;
         //Vector3 RayDirection = new Vector3(1, 0, 1);
-        Vector3 RayDirection = new Vector3(Random.Range(0f,1f), 0, Random.Range(0f, 1f));
+        //Code below randomizes the initial ray orientation to create a monte carlo (?) random sampling
+        Vector3 RayDirection = new Vector3(Random.Range(0f,1f), Random.Range(0f, .25f), 0);
+        sky_exposure = 0;
+       
+        Vector3 NewRayCastLocation = (transform.position + (new Vector3(0.0f, 2.0f, 0.0f)));
         for (int i = 0; i < raynumber; i++)
         {
-            Debug.DrawRay(transform.position, RayDirection * 50, Color.green);
+            //visualize the ray being cast in the interface
+            //Debug.DrawRay(NewRayCastLocation, RayDirection * 100, Color.green);
+
+            //if (Physics.Raycast(transform.position, RayDirection, 300))
+            if (Physics.Raycast(NewRayCastLocation, RayDirection, 300))
+            {
+                print("Ray Hit!");
+                temp_sky_exposure = temp_sky_exposure + (1f / raycount);
+                //Debug.DrawRay(NewRayCastLocation, RayDirection * 100, Color.yellow);
+                Debug.DrawRay(NewRayCastLocation, RayDirection * 50, Color.white);
+                print("sky_exposure variable = " + temp_sky_exposure); 
+            }
+            else
+            {
+                print("Ray not Hit!");
+            }
+            //update sky_exposure
+            sky_exposure = temp_sky_exposure;
             //rotate Ray Direction Vector3
             RayDirection = Quaternion.Euler(0, (360/raynumber), 0) * RayDirection;
         }
 
-        //listener to move to the raycast location
-        /*
-		 if (Input.GetMouseButtonDown(0))
-        {
-            print("PlayerController Button Down Registered");
-            Ray ray = cam.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
 
-            if (Physics.Raycast(ray, out hit))
-            {
-                //Move the Agent
-                agent.SetDestination(hit.point);
-                print("PlayerController moving agent based on raycast");
-            }
-
-        }
-        */
 
 
         //Test for Vector Flag to turn on vector line renderer
@@ -88,17 +108,21 @@ public class PlayerController : MonoBehaviour {
         vector_render = false;
     }
 
+
+    /*
+    //deprecated
     public void Sky_Exposure()
     {
         //run a test to see what percentage of sky is hit
         int raynumber = 10;
         int RaysHit = 0;
+        Vector3 NewRayCastLocation = (transform.position + (new Vector3(0.0f, 2.0f, 2.0f)));
         for (int i = 0; i < raynumber; i++)
         {
-            Debug.DrawRay(transform.position, new Vector3(1, 1, 1) * 50, Color.green);
+            Debug.DrawRay(NewRayCastLocation, new Vector3(1, 1, 1) * 50, Color.white);
             RaycastHit objectHit;
             // Shoot raycast
-            if (Physics.Raycast(transform.position, new Vector3(1,1,1) , out objectHit, 50))
+            if (Physics.Raycast(NewRayCastLocation, new Vector3(1,1,1) , out objectHit, 50))
             {
                 //Debug.DrawRay(transform.position, fwd * 50, Color.green);
                 RaysHit++;
@@ -106,4 +130,5 @@ public class PlayerController : MonoBehaviour {
         }
 
     }
+    */
 }

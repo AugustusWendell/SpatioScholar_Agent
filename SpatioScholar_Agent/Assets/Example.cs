@@ -13,9 +13,11 @@ public class Example : MonoBehaviour
     public GameObject controller;
     public GameObject target1;
     public GameObject target2;
-    public NavMeshAgent Agent1;
-    public NavMeshAgent Agent2;
+    //deprecated
+    //public NavMeshAgent Agent1;
+    //public NavMeshAgent Agent2;
     public NavMeshAgent SSAgent;
+    public Canvas SS_Agent_Canvas;
 
     //for use changing variables
     GameObject referenceObject;
@@ -48,6 +50,7 @@ public class Example : MonoBehaviour
         });
 
 
+
         //set/populate controller and target objects
         controller = GameObject.Find("SS_Agent_Controller");
         target1 = GameObject.Find("Target 1");
@@ -56,10 +59,40 @@ public class Example : MonoBehaviour
         List<NavMeshAgent> AgentList = new List<NavMeshAgent>();
     }
 
+    void Update()
+    {
+
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            print("tab key was pressed");
+            ToggleUI();
+        }
+
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            AddAgent();
+        }
+    }
+
     void TaskOnClick()
     {
         //Output this to console when the Button is clicked
         Debug.Log("You have clicked the button!");
+    }
+
+
+    void ToggleUI()
+    {
+        print("ToggleUI method called");
+        if (SS_Agent_Canvas.enabled == true)
+        {
+            SS_Agent_Canvas.enabled = false;
+        }
+        else
+        {
+            SS_Agent_Canvas.enabled = true;
+        }
+    
     }
 
     void SaveCSV()

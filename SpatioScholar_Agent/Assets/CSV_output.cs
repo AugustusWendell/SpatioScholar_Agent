@@ -21,13 +21,21 @@ public class CSV_output : MonoBehaviour
     public void Save()
     {
         print("CSV Save Method Called");
-        // Creating First row of titles manually.
-        string[] rowDataTemp = new string[5];
+        // Creating First row of titles manually. Had to break out Vector3 components so the CSV file was 
+        // easier to process with separate X, Y, Z fields.
+        string[] rowDataTemp = new string[12];
         rowDataTemp[0] = "ID_Number";
-        rowDataTemp[1] = "Birth_Location";
-        rowDataTemp[2] = "Current_Location";
-        rowDataTemp[3] = "Current_Vector";
-        rowDataTemp[4] = "Target";
+        rowDataTemp[1] = "Birth_Location_X";
+        rowDataTemp[2] = "Birth_Location_Y";
+        rowDataTemp[3] = "Birth_Location_Z";
+        rowDataTemp[4] = "Current_Location_X";
+        rowDataTemp[5] = "Current_Location_Y";
+        rowDataTemp[6] = "Current_Location_Z";
+        rowDataTemp[7] = "Current_Vector_X";
+        rowDataTemp[8] = "Current_Vector_Y";
+        rowDataTemp[9] = "Current_Vector_Z";
+        rowDataTemp[10] = "Target";
+        rowDataTemp[11] = "Sky Exposure";
         rowData.Add(rowDataTemp);
 
 
@@ -37,20 +45,29 @@ public class CSV_output : MonoBehaviour
         */
 
         // You can add up the values in as many cells as you want.
-        //for (int i = 0; i < GetComponent<Example>().AgentList.Count; i++)
-        for (int i = 1; i < 3; i++)
+        for (int i = 0; i < GetComponent<Example>().AgentList.Count; i++)
+        //for (int i = 1; i < 3; i++)
         {
             //debug
             print("CSV Save data method : finding agent number " + i);
             //debug object being queried
             print("CSV Save data method : finding information from agent " + GetComponent<Example>().AgentList[i]);
-            rowDataTemp = new string[5];
+            rowDataTemp = new string[12];
             //rowDataTemp[0] = "Sushanta" + i; // name
             rowDataTemp[0] = "" + i; // ID_Number
-            rowDataTemp[1] = GetComponent<Example>().AgentList[i].transform.position.ToString(); // Birth_Location
-            rowDataTemp[2] = GetComponent<Example>().AgentList[i].transform.position.ToString(); // Current_Location
-            rowDataTemp[3] = GetComponent<Example>().AgentList[i].velocity.ToString(); // Current_Vector
-            rowDataTemp[4] = GetComponent<Example>().AgentList[i].destination.ToString(); // Target
+            rowDataTemp[1] = GetComponent<Example>().AgentList[i].transform.position.x.ToString(); // Birth_Location_X
+            rowDataTemp[2] = GetComponent<Example>().AgentList[i].transform.position.y.ToString(); // Birth_Location_Y
+            rowDataTemp[3] = GetComponent<Example>().AgentList[i].transform.position.z.ToString(); // Birth_Location_Z
+            rowDataTemp[4] = GetComponent<Example>().AgentList[i].transform.position.x.ToString(); // Current_Location_X
+            rowDataTemp[5] = GetComponent<Example>().AgentList[i].transform.position.y.ToString(); // Current_Location_Y
+            rowDataTemp[6] = GetComponent<Example>().AgentList[i].transform.position.z.ToString(); // Current_Location_Z
+            rowDataTemp[7] = GetComponent<Example>().AgentList[i].velocity.x.ToString(); // Current_Vector_X
+            rowDataTemp[8] = GetComponent<Example>().AgentList[i].velocity.y.ToString(); // Current_Vector_Y
+            rowDataTemp[9] = GetComponent<Example>().AgentList[i].velocity.z.ToString(); // Current_Vector_Z
+            //rowDataTemp[10] = GetComponent<Example>().AgentList[i].destination.ToString(); // Target
+            rowDataTemp[10] = "No Target Assigned"; // Target
+            //need to get sky exposure variable, method below is not working....
+            rowDataTemp[11] = GetComponent<Example>().AgentList[i].GetComponent<PlayerController>().sky_exposure.ToString(); // Sky Exposure
             rowData.Add(rowDataTemp);
         }
 
