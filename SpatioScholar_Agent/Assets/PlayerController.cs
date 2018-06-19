@@ -8,6 +8,7 @@ public class PlayerController : MonoBehaviour {
     public NavMeshAgent agent;
     public bool vector_render;
     public bool attributes_render;
+    public bool debug_rays;
     public bool attributes_visible;
     public float sky_exposure;
     public float temp_sky_exposure;
@@ -18,7 +19,7 @@ public class PlayerController : MonoBehaviour {
         //debug
         print("PlayerController initialization");
         temp_sky_exposure = 0;
-
+        debug_rays = true;
     }
 	
 	// Update is called once per frame
@@ -33,6 +34,8 @@ public class PlayerController : MonoBehaviour {
 
 
 
+        if (debug_rays = true) {
+            
         //Test RayTrace Code
         int raycount = 20;
         int raynumber = raycount;
@@ -40,30 +43,30 @@ public class PlayerController : MonoBehaviour {
         //Code below randomizes the initial ray orientation to create a monte carlo (?) random sampling
         Vector3 RayDirection = new Vector3(Random.Range(0f,1f), Random.Range(0f, .25f), 0);
         sky_exposure = 0;
-       
         Vector3 NewRayCastLocation = (transform.position + (new Vector3(0.0f, 2.0f, 0.0f)));
-        for (int i = 0; i < raynumber; i++)
-        {
-            //visualize the ray being cast in the interface
-            //Debug.DrawRay(NewRayCastLocation, RayDirection * 100, Color.green);
+            for (int i = 0; i < raynumber; i++)
+            {
+                //visualize the ray being cast in the interface
+                //Debug.DrawRay(NewRayCastLocation, RayDirection * 100, Color.green);
 
-            //if (Physics.Raycast(transform.position, RayDirection, 300))
-            if (Physics.Raycast(NewRayCastLocation, RayDirection, 300))
-            {
-                print("Ray Hit!");
-                temp_sky_exposure = temp_sky_exposure + (1f / raycount);
-                //Debug.DrawRay(NewRayCastLocation, RayDirection * 100, Color.yellow);
-                Debug.DrawRay(NewRayCastLocation, RayDirection * 50, Color.white);
-                print("sky_exposure variable = " + temp_sky_exposure); 
+                //if (Physics.Raycast(transform.position, RayDirection, 300))
+                if (Physics.Raycast(NewRayCastLocation, RayDirection, 300))
+                {
+                    print("Ray Hit!");
+                    temp_sky_exposure = temp_sky_exposure + (1f / raycount);
+                    //Debug.DrawRay(NewRayCastLocation, RayDirection * 100, Color.yellow);
+                    Debug.DrawRay(NewRayCastLocation, RayDirection * 50, Color.white);
+                    print("sky_exposure variable = " + temp_sky_exposure);
+                }
+                else
+                {
+                    print("Ray not Hit!");
+                }
+                //update sky_exposure
+                sky_exposure = temp_sky_exposure;
+                //rotate Ray Direction Vector3
+                RayDirection = Quaternion.Euler(0, (360 / raynumber), 0) * RayDirection;
             }
-            else
-            {
-                print("Ray not Hit!");
-            }
-            //update sky_exposure
-            sky_exposure = temp_sky_exposure;
-            //rotate Ray Direction Vector3
-            RayDirection = Quaternion.Euler(0, (360/raynumber), 0) * RayDirection;
         }
 
 
@@ -106,6 +109,18 @@ public class PlayerController : MonoBehaviour {
         //debug
         print("Setting Vector Render False");
         vector_render = false;
+    }
+
+    public void ToggleDebugRays()
+    {
+        if (debug_rays = false)
+        {
+            debug_rays = true;
+        }
+        else
+        {
+            debug_rays = false;
+        }
     }
 
 

@@ -9,7 +9,7 @@ using System.Collections.Generic;
 public class Example : MonoBehaviour
 {
     //Make sure to attach these Buttons in the Inspector
-    public Button m_Target1Button, m_Target2Button, m_AddAgentButton, m_ToggleVectorButton, m_CSV_SaveButton;
+    public Button m_Target1Button, m_Target2Button, m_AddAgentButton, m_ToggleVectorButton, m_CSV_SaveButton, m_DebugRaysButton;
     public GameObject controller;
     public GameObject target1;
     public GameObject target2;
@@ -48,6 +48,7 @@ public class Example : MonoBehaviour
             //GetComponent<CSV_output>().Save();
             SaveCSV();
         });
+        m_DebugRaysButton.onClick.AddListener(delegate { ToggleDebugRays(); });
 
 
 
@@ -115,6 +116,24 @@ public class Example : MonoBehaviour
             for (int i = 0; i < AgentList.Count; i++)
             {
                 AgentList[i].SetDestination(target1.transform.position);
+            }
+        }
+        catch (Exception e)
+        {
+            print("error");
+        }
+    }
+
+    
+
+       void ToggleDebugRays()
+        {
+
+        try
+        {
+            for (int i = 0; i < AgentList.Count; i++)
+            {
+                AgentList[i].GetComponent<PlayerController>().ToggleDebugRays();
             }
         }
         catch (Exception e)
