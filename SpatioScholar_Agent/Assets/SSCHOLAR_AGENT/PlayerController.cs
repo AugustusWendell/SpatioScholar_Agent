@@ -14,11 +14,11 @@ public class PlayerController : MonoBehaviour {
     public float temp_sky_exposure;
     private float hit;
     public bool intervisibility;
+    public GameObject home;
 
     // Use this for initialization
     void Start () {
-        //debug
-        print("PlayerController initialization");
+        //print("PlayerController initialization");
         temp_sky_exposure = 0;
         debug_rays = true;
     }
@@ -85,18 +85,18 @@ public class PlayerController : MonoBehaviour {
         }
 
         //make sure atributes visible is turned off
-        if (attributes_render = false)
+        if (attributes_render == false)
         {
-            if (attributes_visible = true)
+            if (attributes_visible == true)
             {
                 attributes_visible = false;
             }
         }
 
         //Test for Attribute Render Flag to turn on Canvas
-        if (attributes_render = true)
+        if (attributes_render == true)
         {
-            if (attributes_visible = false){
+            if (attributes_visible == false){
                 attributes_visible = true;
             }
 
@@ -122,7 +122,7 @@ public class PlayerController : MonoBehaviour {
 
     public void ToggleDebugRays()
     {
-        if (debug_rays = false)
+        if (debug_rays == false)
         {
             debug_rays = true;
         }

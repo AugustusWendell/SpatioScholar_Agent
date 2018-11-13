@@ -6,7 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 
-public class Example : MonoBehaviour
+public class SScholar_Agent_Controller : MonoBehaviour
 {
     //Make sure to attach these Buttons in the Inspector
     public Button m_Target1Button, m_Target2Button, m_AddAgentButton, m_ToggleVectorButton, m_CSV_SaveButton, m_DebugRaysButton;
@@ -33,15 +33,6 @@ public class Example : MonoBehaviour
 
     void Start()
     {
-        //Button btn = m_Target1Button.GetComponent<Button>();
-        //Button btn2 = m_Target2Button.GetComponent<Button>();
-
-        //Calls the TaskOnClick method when you click the Button
-        //btn.onClick.AddListener(TaskOnClick);
-
-        //example listener assignment
-        //m_Target1Button.onClick.AddListener(delegate { TaskWithParameters("Hello"); });
-
         m_Target1Button.onClick.AddListener(delegate { UpdateTarget1(); });
         m_Target2Button.onClick.AddListener(delegate { UpdateTarget2(); });
         m_AddAgentButton.onClick.AddListener(delegate { AddAgent(); });
@@ -56,10 +47,8 @@ public class Example : MonoBehaviour
         });
         m_DebugRaysButton.onClick.AddListener(delegate { ToggleDebugRays(); });
 
-
-
         //set/populate controller and target objects
-        controller = GameObject.Find("SS_Agent_Controller");
+        controller = GameObject.Find("SScholar_Agent_Controller");
         target1 = GameObject.Find("Target 1");
         target2 = GameObject.Find("Target 2");
 
@@ -71,12 +60,13 @@ public class Example : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            print("tab key was pressed");
+            print("Tab key was pressed, Toggle Main UI");
             ToggleUI();
         }
 
         if (Input.GetKeyDown(KeyCode.A))
         {
+            print("A key was pressed, Adding new Agent");
             AddAgent();
         }
     }
@@ -91,7 +81,7 @@ public class Example : MonoBehaviour
     void ToggleUI()
     {
         print("ToggleUI method called");
-        if (SS_Agent_Canvas.enabled == true)
+        if (SS_Agent_Canvas.enabled)
         {
             SS_Agent_Canvas.enabled = false;
         }
@@ -116,7 +106,6 @@ public class Example : MonoBehaviour
 
 	void UpdateTarget1()
 	{
-
         try
         {
             for (int i = 0; i < AgentList.Count; i++)
@@ -134,7 +123,6 @@ public class Example : MonoBehaviour
 
        void ToggleDebugRays()
         {
-
         try
         {
             for (int i = 0; i < AgentList.Count; i++)
@@ -230,32 +218,12 @@ public class Example : MonoBehaviour
                 referenceObject = t.gameObject;
                 referenceScript = referenceObject.GetComponent<PlayerController>();
                 referenceScript.ToggleVector();
-               
-                
-                /*
-                // Now in the start method, you need to get the references of these things inside a scene.
-                // To find the GameObject with tag "ObjectOne" you would use:
-                referenceObject = GameObject.FindObjectWithTag("ObjectOne");
-// this method searches the scene for object, which is tagged "ObjectOne" and
-// assigns it to the 'referenceObject' variable
-// Now you need to get the component called 'ScriptOne' that's attached to the object.
-referenceScript = referenceObject.GetComponent<PlayerController>();
-// you call GetComponent <ComponentType>() on the referenceObject and it returns
-// the component of the type that you specified between < > (if it has one).
-// Now you can change the variable inside the ObjectOne, from the inside of ObjectTwo
-referenceScript.integerToChange = 1;
-// You can launch a method that's defined in 'ScriptOne' as well
-*/
-
-
             }
         }
         catch (Exception e)
         {
             print("error");
         }
-
-
     }
 
 }

@@ -14,8 +14,8 @@ public class SSAgent_Intervisibility_Target : MonoBehaviour {
         //this list will be queried by agents to direct their rays only in the direction of intervisbility targets
         //agents will then hold values for how much of the target they can see....not sure the best way to determine how much they can see......
 
-        GameObject controller = GameObject.Find("SS_Agent_Controller");
-        Example example = (Example)controller.GetComponent(typeof(Example));
+        GameObject controller = GameObject.Find("SScholar_Agent_Controller");
+        SScholar_Agent_Controller example = (SScholar_Agent_Controller)controller.GetComponent(typeof(SScholar_Agent_Controller));
         example.AddIntervisibilityTarget(gameObject);
 
     }
