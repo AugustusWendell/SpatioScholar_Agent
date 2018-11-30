@@ -1,0 +1,12 @@
+{
+  "itinerary": "yes",
+  "type": "patient",
+  "testhours": [
+    {
+      "key": "value"
+    },
+    {
+    "key2": "value2"
+    }
+  ]
+}

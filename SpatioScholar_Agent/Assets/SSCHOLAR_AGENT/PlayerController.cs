@@ -15,12 +15,32 @@ public class PlayerController : MonoBehaviour {
     private float hit;
     public bool intervisibility;
     public GameObject home;
+    public GameObject target;
+    public Mesh mesh;
+    public Bounds bounds;
+    public Vector3 bound_center;
+    public Vector3 bound_extents;
+    public float x_div;
+    public float y_div;
+    public float z_div;
+    public float x_start;
+    public float y_start;
+    public float z_start;
 
     // Use this for initialization
     void Start () {
         //print("PlayerController initialization");
         temp_sky_exposure = 0;
         debug_rays = true;
+
+        target = GameObject.Find("Intervisibility Target");
+        //Mesh mesh = target.GetComponent<MeshFilter>().mesh;
+        Renderer mesh = target.GetComponent<Renderer>();
+        bounds = mesh.bounds;
+        bound_center = bounds.center;
+        Debug.Log(bound_center);
+        bound_extents = bounds.extents;
+        Debug.Log(bound_extents);
     }
 	
 	// Update is called once per frame
@@ -33,7 +53,8 @@ public class PlayerController : MonoBehaviour {
         layerMask = ~layerMask;
 
         //call the intervisibility Raycast method
-        Intervisibility_Raycast();
+        //Intervisibility_Raycast();
+        Intervisibility_Bounding_Raycast(8);
 
         /*  put into a separate method for calling specific sky exposure raycasts
         if (debug_rays = true) {
@@ -132,6 +153,70 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    public void Intervisibility_Bounding_Raycast(int x)
+    {
+       //print("Intervisibility Bounding Raycast Called");
+        x_div = (bound_extents.x * 2) / x;
+        y_div = (bound_extents.y * 2) / x;
+        z_div = (bound_extents.z * 2) / x;
+        x_start = bound_center.x - bound_extents.x;
+        y_start = bound_center.y - bound_extents.y;
+        z_start = bound_center.z - bound_extents.z;
+
+        for (int i = 0; i < (x); i++)
+        {
+            //x
+
+            y_start = bound_center.y - bound_extents.y;
+            for (int j = 0; j < (x); j++)
+            {
+                //y
+                z_start = bound_center.z - bound_extents.z;
+                for (int k = 0; k < (x); k++)
+                {
+                    //z
+                    //Vector3 RayDirection = target.transform.position - transform.position;
+                    Vector3 test_target = new Vector3(x_start, y_start, z_start);
+                    Debug.Log(test_target);
+                    Vector3 RayDirection = test_target - transform.position;
+                    Vector3 NewRayCastLocation = (transform.position + (new Vector3(0.0f, 2.0f, 0.0f)));
+
+                    // Bit shift the index of the layer (8) to get a bit mask
+                    int layerMask = 1 << 8;
+                    // This would cast rays only against colliders in layer 8.
+                    // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+                    layerMask = ~layerMask;
+                    RaycastHit hit;
+
+                    //if (Physics.Raycast(NewRayCastLocation, RayDirection, 300) && )
+                    if (Physics.Raycast(NewRayCastLocation, RayDirection, out hit, Mathf.Infinity, layerMask))
+                    {
+                        
+                        if (hit.collider.gameObject.name == "Intervisibility Target")
+                        {
+                            //print("Ray Hit!");
+                            Debug.DrawRay(NewRayCastLocation, RayDirection * 50, Color.red);
+                            hit.collider.gameObject.GetComponent<Renderer>().material.color = Color.red;
+                        }
+
+                        //Debug.DrawRay(NewRayCastLocation, RayDirection * 50, Color.white);
+                    }
+                    else
+                    {
+
+                        //print("Ray not Hit!");
+                    }
+                    //z
+                    z_start = z_start + z_div;
+                }
+                //y
+                y_start = y_start + y_div;
+            }
+            //x
+            x_start = x_start + x_div;
+        }
+    }
+
     public void Intervisibility_Raycast()
     {
         print("Intervisibility Raycast Called");
@@ -154,9 +239,11 @@ public class PlayerController : MonoBehaviour {
             print("Ray Hit!");
             if(hit.collider.gameObject.name == "Intervisibility Target")
             {
-                Debug.DrawRay(NewRayCastLocation, RayDirection * 50, Color.white);
+                Debug.DrawRay(NewRayCastLocation, RayDirection * 50, Color.red);
+                hit.collider.gameObject.GetComponent<Renderer>().material.color = Color.red;
             }
 
+            Debug.DrawRay(NewRayCastLocation, RayDirection * 50, Color.white);
         }
         else
         {
