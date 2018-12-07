@@ -8,11 +8,11 @@
   "Total_Number": 12,
   "HomeObject": "Home_ObjectName",
   "Itinerary": {
-    "110": "Target 1",
+    "610": "Target DiningHall",
 
-    "320": "Target 2",
+    "925": "Target Courtyard",
 
-    "530": "Target 1"
+    "1350": "Target DiningHall"
 
   }
 }

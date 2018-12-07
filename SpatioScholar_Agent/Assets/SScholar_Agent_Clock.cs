@@ -40,7 +40,7 @@ public class SScholar_Agent_Clock : MonoBehaviour {
     {
         if (minute < 59)
         {
-            if(timebuffer > 2)
+            if(timebuffer > 1)
             {
                 minute++;
                 timebuffer = 0;

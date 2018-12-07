@@ -175,7 +175,9 @@ public class SScholar_Agent_Controller : MonoBehaviour
         Vector3 AddAgentLocation = home_obj.transform.position;
 
         Quaternion AddAgentRotation = new Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
-        NavMeshAgent newAgent = (NavMeshAgent)Instantiate(SSAgent, AddAgentLocation, AddAgentRotation);
+        //NavMeshAgent newAgent = (NavMeshAgent)Instantiate(SSAgent, AddAgentLocation, AddAgentRotation);
+        NavMeshAgent newAgent = Instantiate(SSAgent, AddAgentLocation, AddAgentRotation);
+        newAgent.GetComponent<PlayerController>().Itinerary = a.Itinerary;
         AgentList.Add(newAgent);
     }
 
