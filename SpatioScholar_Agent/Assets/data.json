@@ -1,12 +1,18 @@
 {
-  "itinerary": "yes",
-  "type": "patient",
-  "testhours": [
-    {
-      "key": "value"
-    },
-    {
-    "key2": "value2"
-    }
-  ]
+  "Type": "Patient",
+  "Block": "E",
+  "Ward": "4",
+  "ID": "Auto",
+  "Sex": "Female",
+  "State": "TBD",
+  "Total_Number": 12,
+  "HomeObject": "Home_ObjectName",
+  "Itinerary": {
+    "110": "Target 1",
+
+    "320": "Target 2",
+
+    "530": "Target 1"
+
+  }
 }

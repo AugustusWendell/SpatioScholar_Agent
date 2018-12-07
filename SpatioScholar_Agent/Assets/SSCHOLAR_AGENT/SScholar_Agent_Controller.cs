@@ -10,6 +10,8 @@ public class SScholar_Agent_Controller : MonoBehaviour
 {
     //Make sure to attach these Buttons in the Inspector
     public Button m_Target1Button, m_Target2Button, m_AddAgentButton, m_ToggleVectorButton, m_CSV_SaveButton, m_DebugRaysButton;
+
+    public Button m_StartSim, m_PauseSim;
     public Toggle IntervisibilityToggle;
     public GameObject controller;
     public GameObject target1;
@@ -17,6 +19,9 @@ public class SScholar_Agent_Controller : MonoBehaviour
     public GameObject spawnpoint;
     public NavMeshAgent SSAgent;
     public Canvas SS_Agent_Canvas;
+    public bool simulation_active = false;
+    public SScholar_Agent_Clock clock;
+    public Text clock_display;
 
     //for use changing variables
     GameObject referenceObject;
@@ -37,6 +42,8 @@ public class SScholar_Agent_Controller : MonoBehaviour
         m_Target2Button.onClick.AddListener(delegate { UpdateTarget2(); });
         m_AddAgentButton.onClick.AddListener(delegate { AddAgent(); });
         m_ToggleVectorButton.onClick.AddListener(delegate { ToggleVector(); });
+        m_PauseSim.onClick.AddListener(delegate { PauseSim(); });
+        m_StartSim.onClick.AddListener(delegate { StartSim(); });
 
         //trying this out......to get the intervisibility toggle to work
         IntervisibilityToggle.onValueChanged.AddListener(delegate { ToggleIntervisibility(); });
@@ -60,14 +67,23 @@ public class SScholar_Agent_Controller : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.Tab))
         {
-            print("Tab key was pressed, Toggle Main UI");
+            print("(Tab) key was pressed, Toggle Main UI");
             ToggleUI();
         }
-
         if (Input.GetKeyDown(KeyCode.A))
         {
-            print("A key was pressed, Adding new Agent");
+            print("(A) key was pressed, Adding new Agent");
             AddAgent();
+        }
+        if (Input.GetKeyDown(KeyCode.LeftShift))
+        {
+            print("(LeftShift) key was pressed, Click in scene to Add an Agent");
+            AddAgent();
+        }
+
+        if(simulation_active == true)
+        {
+            Increment_Time();
         }
     }
 
@@ -76,7 +92,6 @@ public class SScholar_Agent_Controller : MonoBehaviour
         //Output this to console when the Button is clicked
         Debug.Log("You have clicked the button!");
     }
-
 
     void ToggleUI()
     {
@@ -103,7 +118,6 @@ public class SScholar_Agent_Controller : MonoBehaviour
         Debug.Log(message);
     }
 
-
 	void UpdateTarget1()
 	{
         try
@@ -119,9 +133,7 @@ public class SScholar_Agent_Controller : MonoBehaviour
         }
     }
 
-    
-
-       void ToggleDebugRays()
+    void ToggleDebugRays()
         {
         try
         {
@@ -136,7 +148,7 @@ public class SScholar_Agent_Controller : MonoBehaviour
         }
     }
 
-    void AddAgent()
+    public void AddAgent()
     {
         //Default Start Location for new agents - this ough to be controlled through a more sophisticated method!
         //Vector3 AddAgentLocation = new Vector3(1.0f, 1.0f, 1.0f);
@@ -157,6 +169,15 @@ public class SScholar_Agent_Controller : MonoBehaviour
         }
         }
 
+    public void Initialize_Agent(AgentInit a)
+    {
+        GameObject home_obj = GameObject.Find(a.HomeObject);
+        Vector3 AddAgentLocation = home_obj.transform.position;
+
+        Quaternion AddAgentRotation = new Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
+        NavMeshAgent newAgent = (NavMeshAgent)Instantiate(SSAgent, AddAgentLocation, AddAgentRotation);
+        AgentList.Add(newAgent);
+    }
 
     void UpdateTarget2()
     {
@@ -166,6 +187,8 @@ public class SScholar_Agent_Controller : MonoBehaviour
             for (int i = 0; i < AgentList.Count; i++)
             {
                 AgentList[i].SetDestination(target2.transform.position);
+                AgentList[i].speed = 1;
+
             }
         }
         catch (Exception e)
@@ -223,6 +246,63 @@ public class SScholar_Agent_Controller : MonoBehaviour
         catch (Exception e)
         {
             print("error");
+        }
+    }
+    void StartSim()
+    {
+        simulation_active = true;
+        print("StartSim method called");
+        try
+        {
+            for (int i = 0; i < AgentList.Count; i++)
+            {
+                NavMeshAgent t = AgentList[i];
+                t.isStopped = false;
+            }
+        }
+        catch (Exception e)
+        {
+            print("error");
+        }
+    }
+    void PauseSim()
+    {
+        simulation_active = false;
+        print("PauseSim method called");
+
+        try
+        {
+            for (int i = 0; i < AgentList.Count; i++)
+            {
+                NavMeshAgent t = AgentList[i];
+                t.isStopped = true;
+            }
+        }
+        catch (Exception e)
+        {
+            print("error");
+        }
+    }
+    void Increment_Time()
+    {
+        clock.increment_time();
+        //display time
+        clock_display.text = clock.return_time();
+        //alert agents of time
+
+        try
+        {
+            for (int i = 0; i < AgentList.Count; i++)
+            {
+                NavMeshAgent t = AgentList[i];
+                referenceObject = t.gameObject;
+                referenceScript = referenceObject.GetComponent<PlayerController>();
+                referenceScript.SetHour(clock.hour, clock.return_time());
+            }
+        }
+        catch (Exception e)
+        {
+            print("error setting agents internal clock");
         }
     }
 

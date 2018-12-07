@@ -1,0 +1,15 @@
+{
+  "itinerary": "yes",
+  "type": "patient",
+  "testhours": [
+    {
+      "six": "home"
+    },
+    {
+      "seven": "diningHall"
+    },
+    {
+      "nine": "bedroom"
+    }
+  ]
+}
