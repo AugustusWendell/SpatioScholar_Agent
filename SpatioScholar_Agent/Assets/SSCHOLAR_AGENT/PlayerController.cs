@@ -27,17 +27,22 @@ public class PlayerController : MonoBehaviour {
     public float y_start;
     public float z_start;
     public int samplesubdiv;
+    public Color AgentColor;
 
-    public string Type = "Patient";
-    public string Block = "E";
-    public string Ward = "4";
-    public string ID = "Auto";
-    public string Sex = "Female";
-    public string State = "TBD";
-    public int Total_Number = 12;
+    public string Type;
+    public string Block;
+    public string Ward;
+    public string ID;
+    public string Sex;
+    public string State;
+    public int Total_Number;
+    public Color Agent_Color;
     public string HomeObjectName = "Home_ObjectName";
     public GameObject HomeObject;
     public int clock_hour = 0;
+
+    //for color change to code agents
+    Material m_Material;
 
     /*
     public Dictionary<string, string> Itinerary = new Dictionary<string, string>()
@@ -64,6 +69,24 @@ public class PlayerController : MonoBehaviour {
         bound_extents = bounds.extents;
         Debug.Log(bound_extents);
         samplesubdiv = 12;
+
+        //set color
+        Component[] renderers;
+
+        renderers = GetComponentsInChildren(typeof(Renderer));
+
+        if (renderers != null)
+        {
+            //Debug.Log("found agent sub object renderer objects, going to change color now")
+            foreach(Renderer r in renderers)
+            {
+                r.material.color = Color.yellow;
+            }
+        }
+        else
+        {
+            //do nothing
+        }
     }
 	
 	// Update is called once per frame
@@ -390,5 +413,32 @@ public class PlayerController : MonoBehaviour {
             //Debug.Log("Current NavMeshAgent destination Vector3 = " + tempNav.destination);
             
         }
+    }
+
+    public void SetColor(Color c)
+    {
+        //set color
+        Component[] renderers;
+
+        renderers = GetComponentsInChildren(typeof(Renderer));
+
+        if (renderers != null)
+        {
+            //Debug.Log("found agent sub object renderer objects, going to change color now")
+            foreach (Renderer r in renderers)
+            {
+                r.material.color = c;
+            }
+        }
+        else
+        {
+            //do nothing
+        }
+    }
+
+    public void Init_Agent_From_JSON(AgentInit a)
+    {
+        Debug.Log("Instance of new Agent Init method called");
+        SetColor(a.AgentColor);
     }
 }

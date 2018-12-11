@@ -191,6 +191,8 @@ public class SScholar_Agent_Controller : MonoBehaviour
                     NavMeshAgent newAgent = Instantiate(SSAgent, AddAgentLocation, AddAgentRotation);
                     newAgent.GetComponent<PlayerController>().Itinerary = a.Itinerary;
                     newAgent.GetComponent<PlayerController>().HomeObject = Home;
+                    //what should become a global init that transfers AgentInit values to the Agent Instance
+                    newAgent.GetComponent<PlayerController>().Init_Agent_From_JSON(a);
                     AgentList.Add(newAgent);
                 }
                 else
@@ -202,6 +204,8 @@ public class SScholar_Agent_Controller : MonoBehaviour
                     NavMeshAgent newAgent = Instantiate(SSAgent, AddAgentLocation, AddAgentRotation);
                     newAgent.GetComponent<PlayerController>().Itinerary = a.Itinerary;
                     newAgent.GetComponent<PlayerController>().HomeObject = Home;
+                    //what should become a global init that transfers AgentInit values to the Agent Instance
+                    newAgent.GetComponent<PlayerController>().Init_Agent_From_JSON(a);
                     AgentList.Add(newAgent);
                 }
             }
@@ -219,10 +223,15 @@ public class SScholar_Agent_Controller : MonoBehaviour
             NavMeshAgent newAgent = Instantiate(SSAgent, AddAgentLocation, AddAgentRotation);
             newAgent.GetComponent<PlayerController>().Itinerary = a.Itinerary;
             newAgent.GetComponent<PlayerController>().HomeObject = Home;
+
+            //what should become a global init that transfers AgentInit values to the Agent Instance
+            newAgent.GetComponent<PlayerController>().Init_Agent_From_JSON(a);
             AgentList.Add(newAgent);
         }
-
         
+
+
+
     }
 
     void UpdateTarget2()

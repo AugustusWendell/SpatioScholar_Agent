@@ -12,6 +12,7 @@ public class JSON_Parser : MonoBehaviour
     private string gameDataFileName = "data.json";
     private string gameDataFileName2 = "data2.json";
     private string saveDataFileName = "data3.json";
+    private string subfolder = "Sscholar_Agent_inits/";
     private AgentInit loadedData;
     public SScholar_Agent_Controller Controller;
 
@@ -25,68 +26,31 @@ public class JSON_Parser : MonoBehaviour
 
     void RunInit()
     {
-        for (int i = 1; i < loadedData.Total_Number; i++)
+        for (int i = 0; i < loadedData.Total_Number; i++)
         {
+            Debug.Log("initializing 1 agent");
             //this passes the integer number along with the call, this could be useful in determining which child object to use as the true home object
             Controller.Initialize_Agent(loadedData, i);
         }
-    }
-
-    private void LoadGameData()
-    {
-        // Path.Combine combines strings into a file path
-        // Application.StreamingAssets points to Assets/StreamingAssets in the Editor, and the StreamingAssets folder in a build
-        string filePath = Path.Combine(Application.dataPath, gameDataFileName);
-
-        //Debug.Log(filePath);
-
-        if (File.Exists(filePath))
-        {
-            // Read the json from the file into a string
-            string dataAsJson = File.ReadAllText(filePath);
-
-            Debug.Log("loadedData as deserialized string direct from imported file text = "  + dataAsJson);
-
-
-            /*
-            //Unity JSON library
-            // Pass the json to JsonUtility, and tell it to create a AgentInit object from it
-            AgentInit loadedData = JsonUtility.FromJson<AgentInit>(dataAsJson);
-            */
-
-            //UltimateJSON library - in an attempt to deserialize a dictionary in the Json, meaning unstructured data
-            loadedData = UltimateJson.JsonObject.Deserialise<AgentInit>(dataAsJson);
-
-
-            Debug.Log("Json cast as object into a ToString function   = " + loadedData.ToString());
-            loadedData.ReturnDictionary();
-
-            
-            //write out a test json output to verify using UltimateJSON
-            string jsonString = UltimateJson.JsonObject.Serialise(loadedData, false);
-            string filePath2 = Path.Combine(Application.dataPath, saveDataFileName);
-            File.WriteAllText(filePath2, jsonString);
-            
-        }
-        else
-        {
-            Debug.LogError("Cannot load json AgentInit object!");
-        }
+        //make sure the AgentInit variable is empty
+        loadedData = null;
     }
 
     private void LoadGameData(string filepath_string)
     {
+        //make sure the AgentInit variable is empty
+        loadedData = null;
         // Path.Combine combines strings into a file path
         // Application.StreamingAssets points to Assets/StreamingAssets in the Editor, and the StreamingAssets folder in a build
-        string filePath = Path.Combine(Application.dataPath, filepath_string);
-
-        //Debug.Log(filePath);
+        string filePath = Path.Combine(Application.dataPath, subfolder);
+        filePath = Path.Combine(filePath, filepath_string);
+        Debug.Log("Looking for an Agent Init file in " + filePath);
 
         if (File.Exists(filePath))
         {
             // Read the json from the file into a string
             string dataAsJson = File.ReadAllText(filePath);
-            //Debug.Log("loadedData as deserialized string direct from imported file text = " + dataAsJson);
+            Debug.Log("loadedData as deserialized string direct from imported file text = " + dataAsJson);
 
             //UltimateJSON library - in an attempt to deserialize a dictionary in the Json, meaning unstructured data
             loadedData = UltimateJson.JsonObject.Deserialise<AgentInit>(dataAsJson);
