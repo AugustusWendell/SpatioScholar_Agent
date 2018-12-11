@@ -6,11 +6,15 @@
   "Sex": "Female",
   "State": "TBD",
   "Total_Number": 12,
-  "HomeObject": "Home_ObjectName",
+  "HomeObject": "TestWard_Home_Array",
   "Itinerary": {
+    "111": "Target Courtyard",
+
     "610": "Target DiningHall",
 
     "925": "Target Courtyard",
+
+    "1123": "Home",
 
     "1350": "Target DiningHall"
 

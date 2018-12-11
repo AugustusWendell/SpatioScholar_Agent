@@ -8,6 +8,7 @@ public class SScholar_Agent_Clock : MonoBehaviour {
     public int minute = 0;
     public string display_time;
     public int timebuffer = 0;
+    public int timescaler = 0;
 
 	// Use this for initialization
 	void Start () {
@@ -40,7 +41,8 @@ public class SScholar_Agent_Clock : MonoBehaviour {
     {
         if (minute < 59)
         {
-            if(timebuffer > 1)
+            
+            if(timebuffer > timescaler)
             {
                 minute++;
                 timebuffer = 0;
@@ -49,6 +51,9 @@ public class SScholar_Agent_Clock : MonoBehaviour {
             {
                 timebuffer++;
             }
+            
+
+            //minute++;
         }
         else
         {

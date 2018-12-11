@@ -35,15 +35,19 @@ public class PlayerController : MonoBehaviour {
     public string Sex = "Female";
     public string State = "TBD";
     public int Total_Number = 12;
-    public string HomeObject = "Home_ObjectName";
+    public string HomeObjectName = "Home_ObjectName";
+    public GameObject HomeObject;
     public int clock_hour = 0;
 
+    /*
     public Dictionary<string, string> Itinerary = new Dictionary<string, string>()
     {
         { "110", "Target 1" },
         { "320", "Target 2" },
         { "530", "Target 1" }
     };
+    */
+    public Dictionary<string, string> Itinerary = new Dictionary<string, string>();
 
     // Use this for initialization
     void Start () {
@@ -349,24 +353,41 @@ public class PlayerController : MonoBehaviour {
     */
     public void SetHour(int a, string b)
     {
+        Vector3 newtargetposition = new Vector3(0,0,0);
+        NavMeshAgent tempNav = gameObject.GetComponent<NavMeshAgent>();
         //Debug.Log("Agent SetHour called with " + a + "  " + b);
         clock_hour = a;
         //if my itinerary has a place to go at this hour then execute a change in target
         if (Itinerary.ContainsKey(b))
         {
             string TT = Itinerary[b];
-            Debug.Log("Key found in Itinerary Dictionary   Value  = " + TT);
+           // Debug.Log("Key found in Itinerary Dictionary   Value  = " + TT);
+            if(Itinerary[b] == "Home")
+            {
+                //go home
+                newtargetposition = gameObject.GetComponent<PlayerController>().HomeObject.transform.position;
+            }
+            else
+            {
+                GameObject TT1 = GameObject.Find(TT);
+                //Debug.Log("Setting Target to    " + TT1);
+                if (TT1.GetComponent<SScholar_Agent_Target_Logic>() != null)
+                {
+                    //query target for whatever type of location the target knows to deliver, for instance a random value within it.
+                    newtargetposition = TT1.GetComponent<SScholar_Agent_Target_Logic>().GetTargetLocation();
+                }
+                else
+                {
+                    newtargetposition = TT1.transform.position;
+                }
+
+                //Debug.Log("new target Vector3 position = " + newtargetposition);
+            }
             
-            GameObject TT1 = GameObject.Find(TT);
-            Debug.Log("Setting Target to    " + TT1);
-
-            NavMeshAgent tempNav = gameObject.GetComponent<NavMeshAgent>();
-
-            Vector3 newtargetposition = TT1.transform.position;
-            Debug.Log("new target Vector3 position = " + newtargetposition);
+            
             tempNav.SetDestination(newtargetposition);
             tempNav.speed = 2;
-            Debug.Log("Current NavMeshAgent destination Vector3 = " + tempNav.destination);
+            //Debug.Log("Current NavMeshAgent destination Vector3 = " + tempNav.destination);
             
         }
     }

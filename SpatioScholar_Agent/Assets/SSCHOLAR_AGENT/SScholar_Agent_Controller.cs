@@ -13,6 +13,7 @@ public class SScholar_Agent_Controller : MonoBehaviour
 
     public Button m_StartSim, m_PauseSim;
     public Toggle IntervisibilityToggle;
+    public Toggle AgentAttributesDisplayToggle;
     public GameObject controller;
     public GameObject target1;
     public GameObject target2;
@@ -47,6 +48,7 @@ public class SScholar_Agent_Controller : MonoBehaviour
 
         //trying this out......to get the intervisibility toggle to work
         IntervisibilityToggle.onValueChanged.AddListener(delegate { ToggleIntervisibility(); });
+        AgentAttributesDisplayToggle.onValueChanged.AddListener(delegate { ToggleAgentAttributeVisibility(); });
 
         m_CSV_SaveButton.onClick.AddListener(delegate {
             //GetComponent<CSV_output>().Save();
@@ -169,16 +171,58 @@ public class SScholar_Agent_Controller : MonoBehaviour
         }
         }
 
-    public void Initialize_Agent(AgentInit a)
+    //This is called by the JSON parser to make each new agent
+    public void Initialize_Agent(AgentInit a, int i)
     {
         GameObject home_obj = GameObject.Find(a.HomeObject);
-        Vector3 AddAgentLocation = home_obj.transform.position;
+        Vector3 AddAgentLocation;
+        GameObject Home;
+        if (home_obj.GetComponent<SScholar_Agent_HomeObjectCoordinator>())
+        {
+            try
+            {
+                //if the number of agents in the JSON file does not match the number of unique home objects in the array default to the first object in the array for all extra agents
+                if(home_obj.GetComponent<SScholar_Agent_HomeObjectCoordinator>().Object_Array[i] == null)
+                {
+                    AddAgentLocation = home_obj.GetComponent<SScholar_Agent_HomeObjectCoordinator>().Object_Array[1].transform.position;
+                    Home = home_obj.GetComponent<SScholar_Agent_HomeObjectCoordinator>().Object_Array[1];
 
-        Quaternion AddAgentRotation = new Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
-        //NavMeshAgent newAgent = (NavMeshAgent)Instantiate(SSAgent, AddAgentLocation, AddAgentRotation);
-        NavMeshAgent newAgent = Instantiate(SSAgent, AddAgentLocation, AddAgentRotation);
-        newAgent.GetComponent<PlayerController>().Itinerary = a.Itinerary;
-        AgentList.Add(newAgent);
+                    Quaternion AddAgentRotation = new Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
+                    NavMeshAgent newAgent = Instantiate(SSAgent, AddAgentLocation, AddAgentRotation);
+                    newAgent.GetComponent<PlayerController>().Itinerary = a.Itinerary;
+                    newAgent.GetComponent<PlayerController>().HomeObject = Home;
+                    AgentList.Add(newAgent);
+                }
+                else
+                {
+                    AddAgentLocation = home_obj.GetComponent<SScholar_Agent_HomeObjectCoordinator>().Object_Array[i].transform.position;
+                    Home = home_obj.GetComponent<SScholar_Agent_HomeObjectCoordinator>().Object_Array[i];
+
+                    Quaternion AddAgentRotation = new Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
+                    NavMeshAgent newAgent = Instantiate(SSAgent, AddAgentLocation, AddAgentRotation);
+                    newAgent.GetComponent<PlayerController>().Itinerary = a.Itinerary;
+                    newAgent.GetComponent<PlayerController>().HomeObject = Home;
+                    AgentList.Add(newAgent);
+                }
+            }
+            catch (Exception e)
+            {
+                print("error");
+            }
+        }
+        else
+        {
+            AddAgentLocation = home_obj.transform.position;
+            Home = home_obj;
+
+            Quaternion AddAgentRotation = new Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
+            NavMeshAgent newAgent = Instantiate(SSAgent, AddAgentLocation, AddAgentRotation);
+            newAgent.GetComponent<PlayerController>().Itinerary = a.Itinerary;
+            newAgent.GetComponent<PlayerController>().HomeObject = Home;
+            AgentList.Add(newAgent);
+        }
+
+        
     }
 
     void UpdateTarget2()
@@ -224,6 +268,25 @@ public class SScholar_Agent_Controller : MonoBehaviour
                 referenceObject = t.gameObject;
                 referenceScript = referenceObject.GetComponent<PlayerController>();
                 referenceScript.ToggleIntervisibility();
+            }
+        }
+        catch (Exception e)
+        {
+            print("error");
+        }
+    }
+
+    void ToggleAgentAttributeVisibility()
+    {
+        try
+        {
+            for (int i = 0; i < AgentList.Count; i++)
+            {
+                NavMeshAgent t = AgentList[i];
+                referenceObject = t.gameObject;
+                //Canvas referenceCanvas = referenceObject.GetComponent<Canvas>();
+                //referenceCanvas.SetActive(false);
+                t.GetComponent<Canvas>().enabled = false;
             }
         }
         catch (Exception e)

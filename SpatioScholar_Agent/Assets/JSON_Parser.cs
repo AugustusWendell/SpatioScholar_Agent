@@ -17,10 +17,6 @@ public class JSON_Parser : MonoBehaviour
 
     void Start()
     {
-
-        //Output the Game data path to the console
-        //Debug.Log(Application.dataPath);
-        //LoadGameData();
         LoadGameData(gameDataFileName);
         RunInit();
         LoadGameData(gameDataFileName2);
@@ -29,11 +25,10 @@ public class JSON_Parser : MonoBehaviour
 
     void RunInit()
     {
-        //(loadedData.Total_Number -3)
         for (int i = 1; i < loadedData.Total_Number; i++)
         {
-            //Controller.AddAgent();
-            Controller.Initialize_Agent(loadedData);
+            //this passes the integer number along with the call, this could be useful in determining which child object to use as the true home object
+            Controller.Initialize_Agent(loadedData, i);
         }
     }
 
