@@ -6,7 +6,7 @@
   "Sex": "Female",
   "State": "TBD",
   "Total_Number": 15,
-  "HomeObject": "Home_ObjectName2",
+  "HomeObject": "TestWard2_Home_Array",
   "Itinerary": {
     "110": "Target 1",
 

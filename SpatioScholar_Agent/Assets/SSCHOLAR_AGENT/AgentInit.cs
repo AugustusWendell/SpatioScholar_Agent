@@ -16,7 +16,7 @@ public class AgentInit
     public string State;
     public int Total_Number;
     public string HomeObject;
-    public Color AgentColor;
+    public string Color;
 
     public Dictionary<string, string> Itinerary;
 
@@ -39,7 +39,7 @@ public class AgentInit
         foreach (string key in Itinerary.Keys)
         {
             string val = Itinerary[key];
-            Debug.Log(key + " = " + val);
+            //Debug.Log(key + " = " + val);
         }
     }
 }

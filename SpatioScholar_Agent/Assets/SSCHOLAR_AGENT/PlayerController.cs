@@ -4,6 +4,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public class PlayerController : MonoBehaviour {
+    public SScholar_Agent_Controller controller;
     public Camera cam;
     public NavMeshAgent agent;
     public bool vector_render;
@@ -60,16 +61,18 @@ public class PlayerController : MonoBehaviour {
         temp_sky_exposure = 0;
         debug_rays = true;
 
+        /*
         target = GameObject.Find("Intervisibility Target");
-        //Mesh mesh = target.GetComponent<MeshFilter>().mesh;
         Renderer mesh = target.GetComponent<Renderer>();
         bounds = mesh.bounds;
         bound_center = bounds.center;
-        Debug.Log(bound_center);
+        //Debug.Log(bound_center);
         bound_extents = bounds.extents;
-        Debug.Log(bound_extents);
+        //Debug.Log(bound_extents);
         samplesubdiv = 12;
+        */
 
+        /*
         //set color
         Component[] renderers;
 
@@ -87,6 +90,7 @@ public class PlayerController : MonoBehaviour {
         {
             //do nothing
         }
+        */
     }
 	
 	// Update is called once per frame
@@ -389,6 +393,7 @@ public class PlayerController : MonoBehaviour {
             {
                 //go home
                 newtargetposition = gameObject.GetComponent<PlayerController>().HomeObject.transform.position;
+                controller.clock.timescaler = 100;
             }
             else
             {
@@ -398,10 +403,13 @@ public class PlayerController : MonoBehaviour {
                 {
                     //query target for whatever type of location the target knows to deliver, for instance a random value within it.
                     newtargetposition = TT1.GetComponent<SScholar_Agent_Target_Logic>().GetTargetLocation();
+
+                    controller.clock.timescaler = 100;
                 }
                 else
                 {
                     newtargetposition = TT1.transform.position;
+                    controller.clock.timescaler = 100;
                 }
 
                 //Debug.Log("new target Vector3 position = " + newtargetposition);
@@ -417,6 +425,7 @@ public class PlayerController : MonoBehaviour {
 
     public void SetColor(Color c)
     {
+        Debug.Log("Agent SetColor method called");
         //set color
         Component[] renderers;
 
@@ -439,6 +448,32 @@ public class PlayerController : MonoBehaviour {
     public void Init_Agent_From_JSON(AgentInit a)
     {
         Debug.Log("Instance of new Agent Init method called");
-        SetColor(a.AgentColor);
+        if (a.Color == "Red")
+        {
+            Debug.Log("Agent color definition in JSON registers as Red");
+            SetColor(Color.red);
+        }
+        else
+        {
+            if (a.Color == "Yellow")
+            {
+                Debug.Log("Agent color definition in JSON registers as Yellow");
+                SetColor(Color.yellow);
+            }
+            else
+            {
+
+                if (a.Color == "White")
+                {
+                    Debug.Log("Agent color definition in JSON registers as White");
+                    SetColor(Color.white);
+                }
+                else
+                {
+                    Debug.Log("Agent color definition in JSON does NOT register as Red");
+                    SetColor(Color.blue);
+                }
+            }
+        }
     }
 }

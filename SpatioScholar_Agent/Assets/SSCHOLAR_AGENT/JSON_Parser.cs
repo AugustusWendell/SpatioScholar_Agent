@@ -11,7 +11,9 @@ public class JSON_Parser : MonoBehaviour
 
     private string gameDataFileName = "data.json";
     private string gameDataFileName2 = "data2.json";
-    private string saveDataFileName = "data3.json";
+    private string gameDataFileName3 = "data3.json";
+    private string gameDataFileName4 = "data4.json";
+    private string saveDataFileName = "data_save_test.json";
     private string subfolder = "Sscholar_Agent_inits/";
     private AgentInit loadedData;
     public SScholar_Agent_Controller Controller;
@@ -22,13 +24,17 @@ public class JSON_Parser : MonoBehaviour
         RunInit();
         LoadGameData(gameDataFileName2);
         RunInit();
+        LoadGameData(gameDataFileName3);
+        RunInit();
+        LoadGameData(gameDataFileName4);
+        RunInit();
     }
 
     void RunInit()
     {
         for (int i = 0; i < loadedData.Total_Number; i++)
         {
-            Debug.Log("initializing 1 agent");
+            //Debug.Log("initializing 1 agent");
             //this passes the integer number along with the call, this could be useful in determining which child object to use as the true home object
             Controller.Initialize_Agent(loadedData, i);
         }
@@ -44,13 +50,13 @@ public class JSON_Parser : MonoBehaviour
         // Application.StreamingAssets points to Assets/StreamingAssets in the Editor, and the StreamingAssets folder in a build
         string filePath = Path.Combine(Application.dataPath, subfolder);
         filePath = Path.Combine(filePath, filepath_string);
-        Debug.Log("Looking for an Agent Init file in " + filePath);
+        //Debug.Log("Looking for an Agent Init file in " + filePath);
 
         if (File.Exists(filePath))
         {
             // Read the json from the file into a string
             string dataAsJson = File.ReadAllText(filePath);
-            Debug.Log("loadedData as deserialized string direct from imported file text = " + dataAsJson);
+            //Debug.Log("loadedData as deserialized string direct from imported file text = " + dataAsJson);
 
             //UltimateJSON library - in an attempt to deserialize a dictionary in the Json, meaning unstructured data
             loadedData = UltimateJson.JsonObject.Deserialise<AgentInit>(dataAsJson);

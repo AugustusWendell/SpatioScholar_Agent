@@ -9,7 +9,7 @@ using System.Collections.Generic;
 public class SScholar_Agent_Controller : MonoBehaviour
 {
     //Make sure to attach these Buttons in the Inspector
-    public Button m_Target1Button, m_Target2Button, m_AddAgentButton, m_ToggleVectorButton, m_CSV_SaveButton, m_DebugRaysButton;
+    public Button m_Target1Button, m_Target2Button, m_AddAgentButton, m_ToggleVectorButton, m_CSV_SaveButton, m_DebugRaysButton, m_ClockFastForward;
 
     public Button m_StartSim, m_PauseSim;
     public Toggle IntervisibilityToggle;
@@ -45,6 +45,7 @@ public class SScholar_Agent_Controller : MonoBehaviour
         m_ToggleVectorButton.onClick.AddListener(delegate { ToggleVector(); });
         m_PauseSim.onClick.AddListener(delegate { PauseSim(); });
         m_StartSim.onClick.AddListener(delegate { StartSim(); });
+        m_ClockFastForward.onClick.AddListener(delegate { Clock_Set_FastForward(); });
 
         //trying this out......to get the intervisibility toggle to work
         IntervisibilityToggle.onValueChanged.AddListener(delegate { ToggleIntervisibility(); });
@@ -371,13 +372,18 @@ public class SScholar_Agent_Controller : MonoBehaviour
                 NavMeshAgent t = AgentList[i];
                 referenceObject = t.gameObject;
                 referenceScript = referenceObject.GetComponent<PlayerController>();
-                referenceScript.SetHour(clock.hour, clock.return_time());
+                referenceScript.SetHour(clock.hour, clock.return_itinerary_time());
             }
         }
         catch (Exception e)
         {
             print("error setting agents internal clock");
         }
+    }
+
+    void Clock_Set_FastForward()
+    {
+        clock.timescaler = 0;
     }
 
 }

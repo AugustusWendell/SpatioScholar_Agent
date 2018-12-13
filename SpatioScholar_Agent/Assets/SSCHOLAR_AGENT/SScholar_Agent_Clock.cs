@@ -9,9 +9,10 @@ public class SScholar_Agent_Clock : MonoBehaviour {
     public string display_time;
     public int timebuffer = 0;
     public int timescaler = 0;
+    public string itinerary_time;
 
-	// Use this for initialization
-	void Start () {
+    // Use this for initialization
+    void Start () {
         Debug.Log("Clock initialized");
 	}
 	
@@ -64,7 +65,38 @@ public class SScholar_Agent_Clock : MonoBehaviour {
     }
     public string return_time()
     {
-        display_time = hour.ToString() + minute.ToString();
+        string display_hour;
+        string display_minute;
+
+        if(hour < 10)
+        {
+            display_hour = "0" + hour.ToString();
+        }
+        else
+        {
+
+            display_hour = hour.ToString();
+        }
+        if (minute < 10)
+        {
+            display_minute = "0" + minute.ToString();
+        }
+        else
+        {
+            display_minute = minute.ToString();
+
+        }
+        display_time = "Hour " + display_hour + "   Minute " + display_minute;
         return display_time;
+    }
+
+    public string return_itinerary_time()
+    {
+        string display_hour;
+        string display_minute;
+            display_hour = hour.ToString();
+            display_minute = minute.ToString();
+        itinerary_time = display_hour + display_minute;
+        return itinerary_time;
     }
 }

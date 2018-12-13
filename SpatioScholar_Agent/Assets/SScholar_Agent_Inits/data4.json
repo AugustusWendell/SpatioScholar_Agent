@@ -1,0 +1,21 @@
+{
+  "Type": "Patient",
+  "Block": "E",
+  "Ward": "4",
+  "ID": "Auto",
+  "Sex": "Female",
+  "State": "Agitated",
+  "Total_Number": 9,
+  "HomeObject": "TestWard3_Home_Array",
+  "Color":  "White",
+  "Itinerary": {
+    "600": "Ward_Three",
+
+    "700": "Home",
+
+    "1000": "Ward_Three1",
+
+    "1800": "Home"
+
+  }
+}
