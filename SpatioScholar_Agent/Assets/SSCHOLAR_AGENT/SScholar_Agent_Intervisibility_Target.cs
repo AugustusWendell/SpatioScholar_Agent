@@ -20,18 +20,19 @@ public class SScholar_Agent_Intervisibility_Target : MonoBehaviour {
         resHeight = 64;
         Texture2D texture = new Texture2D(resWidth, resHeight);
         GetComponent<Renderer>().material.mainTexture = texture;
-        Debug.Log("texture set for rendering");
+        //Debug.Log("texture set for rendering");
       
     }
 	
 	// Update is called once per frame
 	void Update () {
+        /*
         for (int i = 0; i < 31; i++)
         {
             texture.SetPixel(i, 10, Color.gray);
-
         }
         texture.Apply();
+        */
     }
 
     void IsHit()

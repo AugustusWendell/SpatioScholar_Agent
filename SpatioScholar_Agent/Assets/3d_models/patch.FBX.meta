@@ -1,14 +1,16 @@
 fileFormatVersion: 2
-guid: 7c13f2dda8b41df47afcc0dd989db6af
+guid: 5101537392d91e04aa416fccf6ce6bb7
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
     100000: //RootNode
     400000: //RootNode
-    2100000: No Name
+    2100000: Default Shader
     2300000: //RootNode
     3300000: //RootNode
-    4300000: Bed
+    4300000: Rectangle799
+    7400000: Take 001
+    9500000: //RootNode
   externalObjects: {}
   materials:
     importMaterials: 0
@@ -60,8 +62,8 @@ ModelImporter:
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
-    previousCalculatedGlobalScale: 1
-    hasPreviousCalculatedGlobalScale: 0
+    previousCalculatedGlobalScale: 0.0254
+    hasPreviousCalculatedGlobalScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0

@@ -9,11 +9,10 @@
   "HomeObject": "Physician_Home",
   "Color": "Yellow",
   "Itinerary": {
-    "900": "Ward_Three",
 
-    "1000": "Courtyard",
-
-    "1100": "Home"
+    "1111": "Ward_One",
+    "1131":  "Ward_Two",
+    "1211": "Home"
 
   }
 }

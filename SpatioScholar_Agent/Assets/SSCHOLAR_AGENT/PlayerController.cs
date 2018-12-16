@@ -7,17 +7,19 @@ public class PlayerController : MonoBehaviour {
     public SScholar_Agent_Controller controller;
     public Camera cam;
     public NavMeshAgent agent;
-    public bool vector_render;
-    public bool attributes_render;
-    public bool debug_rays;
-    public bool attributes_visible;
+    public bool vector_render = false;
+    public bool attributes_render = false;
+    public bool debug_rays = false;
+    public bool attributes_visible = false;
     public float sky_exposure;
     public float temp_sky_exposure;
     private float hit;
-    public bool intervisibility;
+    public bool intervisibility = false;
     public GameObject home;
     public GameObject target;
     public Mesh mesh;
+
+    public Renderer rend2;
     public Bounds bounds;
     public Vector3 bound_center;
     public Vector3 bound_extents;
@@ -27,8 +29,10 @@ public class PlayerController : MonoBehaviour {
     public float x_start;
     public float y_start;
     public float z_start;
-    public int samplesubdiv;
+    public int samplesubdiv = 3;
     public Color AgentColor;
+
+    public bool dropmarker = false;
 
     public string Type;
     public string Block;
@@ -60,17 +64,28 @@ public class PlayerController : MonoBehaviour {
         //print("PlayerController initialization");
         temp_sky_exposure = 0;
         debug_rays = true;
+        samplesubdiv = 6;
 
-        /*
+
         target = GameObject.Find("Intervisibility Target");
-        Renderer mesh = target.GetComponent<Renderer>();
-        bounds = mesh.bounds;
-        bound_center = bounds.center;
-        //Debug.Log(bound_center);
-        bound_extents = bounds.extents;
-        //Debug.Log(bound_extents);
-        samplesubdiv = 12;
-        */
+        if (target != null)
+        {
+            Debug.Log("intervisibility target(s) found!");
+            //Renderer rend = target.GetComponent<Renderer>();
+            //Renderer rend2 = target.GetComponent<Renderer>();
+            //Collider m_Collider = target.GetComponent<Collider>();
+            Renderer rend = target.GetComponent<Renderer>();
+            bounds = rend.bounds;
+            bound_center = bounds.center;
+            //Debug.Log(bound_center);
+            bound_extents = bounds.extents;
+            //Debug.Log(bound_extents);
+        }
+        else
+        {
+            Debug.Log("no intervisibility target(s) found!");
+        }
+
 
         /*
         //set color
@@ -102,9 +117,22 @@ public class PlayerController : MonoBehaviour {
         // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
         layerMask = ~layerMask;
 
-        if(intervisibility == true) { 
-        //call the intervisibility Raycast method
-        Intervisibility_Bounding_Raycast(samplesubdiv);
+        if(intervisibility == true) {
+            //call the intervisibility Raycast method
+            Debug.Log("intervisibility toggle = true, calling the bounding raycast method");
+            Intervisibility_Bounding_Raycast(samplesubdiv);
+        }
+
+        if(dropmarker == true)
+        {
+            Debug.Log("Dropping visibility marker");
+            //drop object to mark successful hit
+            GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            //cube.AddComponent<Rigidbody>();
+            cube.transform.position = gameObject.transform.position;
+            Renderer rend = cube.GetComponent<Renderer>();
+            rend.material.shader = Shader.Find("_Color");
+            rend.material.SetColor("_Color", Color.green);
         }
 
         /*  put into a separate method for calling specific sky exposure raycasts
@@ -188,14 +216,25 @@ public class PlayerController : MonoBehaviour {
     public void ToggleIntervisibility()
     {
         //debug
-        print("Toggle Intervisibility");
+        print("Agent Instance Toggle Intervisibility method called");
         if (intervisibility == false)
         {
+            Debug.Log("setting intervisibility == true");
             intervisibility = true;
         }
         else
         {
-            intervisibility = false;
+            /*
+            if (intervisibility == true)
+            {
+                Debug.Log("setting intervisibility == false");
+                intervisibility = false;
+            }
+            else
+            {
+
+            }
+            */
         }
     }
 
@@ -213,7 +252,8 @@ public class PlayerController : MonoBehaviour {
 
     public void Intervisibility_Bounding_Raycast(int x)
     {
-       //print("Intervisibility Bounding Raycast Called");
+        print("Intervisibility Bounding Raycast Called");
+        dropmarker = false;
         x_div = (bound_extents.x * 2) / x;
         y_div = (bound_extents.y * 2) / x;
         z_div = (bound_extents.z * 2) / x;
@@ -224,7 +264,6 @@ public class PlayerController : MonoBehaviour {
         for (int i = 0; i < (x); i++)
         {
             //x
-
             y_start = bound_center.y - bound_extents.y;
             for (int j = 0; j < (x); j++)
             {
@@ -249,28 +288,34 @@ public class PlayerController : MonoBehaviour {
                     //if (Physics.Raycast(NewRayCastLocation, RayDirection, 300) && )
                     if (Physics.Raycast(NewRayCastLocation, RayDirection, out hit, Mathf.Infinity, layerMask))
                     {
-                        
+                        //moved this earlier in an effort to have the red rays overwrite the white
+                        Debug.DrawRay(NewRayCastLocation, RayDirection * 50, Color.gray);
                         if (hit.collider.gameObject.name == "Intervisibility Target")
                         {
-                            //print("Ray Hit!");
+                            print("Ray Hit!");
+
+                            dropmarker = true;
+                            
+
                             if (debug_rays == true)
                             {
-                                Debug.DrawRay(NewRayCastLocation, RayDirection * 50, Color.red);
+                                Debug.DrawRay(NewRayCastLocation, RayDirection * 50, Color.red); 
                             }
+                            //Fetch the Material from the Renderer of the GameObject
+                            m_Material = hit.collider.GetComponent<Renderer>().material;
+                            m_Material.color = Color.red;
                             //hit.collider.gameObject().material.color = Color.red;
+
                             //Debug.Log(hit.textureCoord);
-                            Vector2 pixelUV = hit.textureCoord;
-                            SScholar_Agent_Intervisibility_Target target = hit.collider.gameObject.GetComponent<SScholar_Agent_Intervisibility_Target>();
-                            target.DrawTexture(pixelUV.x, pixelUV.y);
+                            //Vector2 pixelUV = hit.textureCoord;
+                            //SScholar_Agent_Intervisibility_Target target = hit.collider.gameObject.GetComponent<SScholar_Agent_Intervisibility_Target>();
+                            //target.DrawTexture(pixelUV.x, pixelUV.y);
 
                             //hit.collider.gameObject.GetComponent<SScholar_Agent_Intervisibility_Target>().
                         }
-
-                        //Debug.DrawRay(NewRayCastLocation, RayDirection * 50, Color.white);
                     }
                     else
                     {
-
                         //print("Ray not Hit!");
                     }
                     //z
@@ -283,7 +328,15 @@ public class PlayerController : MonoBehaviour {
             x_start = x_start + x_div;
         }
     }
+    public void Find_Intervisibility_Object()
+    {
+        print("Intervisibility Raycast Called");
 
+        GameObject target = GameObject.Find("Intervisibility Target");
+
+        Vector3 RayDirection = target.transform.position - transform.position;
+        Vector3 NewRayCastLocation = (transform.position + (new Vector3(0.0f, 2.0f, 0.0f)));
+    }
     public void Intervisibility_Raycast()
     {
         print("Intervisibility Raycast Called");
@@ -306,6 +359,18 @@ public class PlayerController : MonoBehaviour {
             print("Ray Hit!");
             if(hit.collider.gameObject.name == "Intervisibility Target")
             {
+                if(controller.visibility_marker == true)
+                {
+                    //drop a marker
+                    Vector3 AddMarkerLocation = gameObject.transform.position;
+                    Quaternion AddMarkerRotation = new Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
+                    //GameObject marker = Instantiate(Visibility_Marker, AddMarkerLocation, AddMarkerRotation);
+                    GameObject cube = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                    cube.AddComponent<Rigidbody>();
+                    cube.transform.position = gameObject.transform.position;
+
+
+                }
                 if (debug_rays == true)
                 {
                     Debug.DrawRay(NewRayCastLocation, RayDirection * 50, Color.red);
@@ -393,7 +458,7 @@ public class PlayerController : MonoBehaviour {
             {
                 //go home
                 newtargetposition = gameObject.GetComponent<PlayerController>().HomeObject.transform.position;
-                controller.clock.timescaler = 100;
+                controller.clock.timescaler = 500;
             }
             else
             {
@@ -404,12 +469,12 @@ public class PlayerController : MonoBehaviour {
                     //query target for whatever type of location the target knows to deliver, for instance a random value within it.
                     newtargetposition = TT1.GetComponent<SScholar_Agent_Target_Logic>().GetTargetLocation();
 
-                    controller.clock.timescaler = 100;
+                    controller.clock.timescaler = 500;
                 }
                 else
                 {
                     newtargetposition = TT1.transform.position;
-                    controller.clock.timescaler = 100;
+                    controller.clock.timescaler = 500;
                 }
 
                 //Debug.Log("new target Vector3 position = " + newtargetposition);

@@ -12,7 +12,7 @@ public class SScholar_Agent_Controller : MonoBehaviour
     public Button m_Target1Button, m_Target2Button, m_AddAgentButton, m_ToggleVectorButton, m_CSV_SaveButton, m_DebugRaysButton, m_ClockFastForward;
 
     public Button m_StartSim, m_PauseSim;
-    public Toggle IntervisibilityToggle;
+    public Toggle IntervisibilityToggle, m_VisibilityMarker;
     public Toggle AgentAttributesDisplayToggle;
     public GameObject controller;
     public GameObject target1;
@@ -23,6 +23,7 @@ public class SScholar_Agent_Controller : MonoBehaviour
     public bool simulation_active = false;
     public SScholar_Agent_Clock clock;
     public Text clock_display;
+    public bool visibility_marker;
 
     //for use changing variables
     GameObject referenceObject;
@@ -46,8 +47,8 @@ public class SScholar_Agent_Controller : MonoBehaviour
         m_PauseSim.onClick.AddListener(delegate { PauseSim(); });
         m_StartSim.onClick.AddListener(delegate { StartSim(); });
         m_ClockFastForward.onClick.AddListener(delegate { Clock_Set_FastForward(); });
+        m_VisibilityMarker.onValueChanged.AddListener(delegate { Set_Visibility_Marker(); });
 
-        //trying this out......to get the intervisibility toggle to work
         IntervisibilityToggle.onValueChanged.AddListener(delegate { ToggleIntervisibility(); });
         AgentAttributesDisplayToggle.onValueChanged.AddListener(delegate { ToggleAgentAttributeVisibility(); });
 
@@ -164,6 +165,7 @@ public class SScholar_Agent_Controller : MonoBehaviour
 
         Quaternion AddAgentRotation = new Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
         NavMeshAgent newAgent = (NavMeshAgent)Instantiate(SSAgent, AddAgentLocation, AddAgentRotation);
+        newAgent.GetComponent<PlayerController>().controller = gameObject.GetComponent<SScholar_Agent_Controller>();
         AgentList.Add(newAgent);
         for (int i = 0; i < AgentList.Count; i++)
             {
@@ -268,8 +270,9 @@ public class SScholar_Agent_Controller : MonoBehaviour
         Debug.Log("Intervisibility target " + target.name + " added");
     }
 
-    void ToggleIntervisibility()
+    public void ToggleIntervisibility()
     {
+        Debug.Log("intervisibility toggle clicked");
         try
         {
             for (int i = 0; i < AgentList.Count; i++)
@@ -277,6 +280,8 @@ public class SScholar_Agent_Controller : MonoBehaviour
                 NavMeshAgent t = AgentList[i];
                 referenceObject = t.gameObject;
                 referenceScript = referenceObject.GetComponent<PlayerController>();
+
+                Debug.Log("calling intervisibilty for 1 agent instance");
                 referenceScript.ToggleIntervisibility();
             }
         }
@@ -326,7 +331,7 @@ public class SScholar_Agent_Controller : MonoBehaviour
     void StartSim()
     {
         simulation_active = true;
-        print("StartSim method called");
+        //print("StartSim method called");
         try
         {
             for (int i = 0; i < AgentList.Count; i++)
@@ -334,6 +339,8 @@ public class SScholar_Agent_Controller : MonoBehaviour
                 NavMeshAgent t = AgentList[i];
                 t.isStopped = false;
             }
+            clock.hour = 6;
+            clock.minute = 0;
         }
         catch (Exception e)
         {
@@ -384,6 +391,30 @@ public class SScholar_Agent_Controller : MonoBehaviour
     void Clock_Set_FastForward()
     {
         clock.timescaler = 0;
+        /*
+         * try
+        {
+            for (int i = 0; i < AgentList.Count; i++)
+            {
+                NavMeshAgent t = AgentList[i];
+                t.speed = 300;
+            }
+        }
+        catch (Exception e)
+        {
+            print("error");
+        }
+        */
     }
-
+    void Set_Visibility_Marker()
+    {
+        if(visibility_marker == true)
+        {
+            visibility_marker = false;
+        }
+        if (visibility_marker == false)
+        {
+            visibility_marker = true;
+        }
+    }
 }
