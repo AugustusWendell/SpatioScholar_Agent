@@ -9,17 +9,40 @@ using UltimateJson;
 public class JSON_Parser : MonoBehaviour
 {
 
-    private string gameDataFileName = "data.json";
-    private string gameDataFileName2 = "data2.json";
-    private string gameDataFileName3 = "data3.json";
-    private string gameDataFileName4 = "data4.json";
-    private string saveDataFileName = "data_save_test.json";
+    //array to hold all the JSON object filenames
+    private string[] AgentInitJsonFilenames;
+
+    //private string gameDataFileName = "data.json";
+    //private string gameDataFileName2 = "data2.json";
+    //private string gameDataFileName3 = "data3.json";
+    //private string gameDataFileName4 = "data4.json";
+    //private string saveDataFileName = "data_save_test.json";
     private string subfolder = "Sscholar_Agent_inits/";
     private AgentInit loadedData;
     public SScholar_Agent_Controller Controller;
 
-    void Start()
+void Start()
     {
+
+        Debug.Log("JSON load start called");
+
+        DirectoryInfo dir = new DirectoryInfo("Assets/Sscholar_Agent_inits/");
+        FileInfo[] info = dir.GetFiles("*.*");
+
+        AgentInitJsonFilenames = new string[info.Length];
+
+        foreach (FileInfo f in info)
+        {
+            Debug.Log(f.ToString());
+        }
+
+        for(int i = 0; i < info.Length; i++)
+        {
+            AgentInitJsonFilenames[i] = info[i].ToString();
+            LoadGameData(info[i].ToString());
+            RunInit();
+        }
+        /*
         LoadGameData(gameDataFileName);
         RunInit();
         LoadGameData(gameDataFileName2);
@@ -28,6 +51,7 @@ public class JSON_Parser : MonoBehaviour
         RunInit();
         LoadGameData(gameDataFileName4);
         RunInit();
+        */
     }
 
     void RunInit()
