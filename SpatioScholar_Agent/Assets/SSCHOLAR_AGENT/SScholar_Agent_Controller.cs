@@ -403,7 +403,17 @@ public class SScholar_Agent_Controller : MonoBehaviour
             print("error setting agents internal clock");
         }
     }
-
+    void GetAgentInfo(int location)
+    {
+        //For the supplied location value in the Agent index, return the information of the agent
+        //AgentList[location];
+    }
+    Vector3 GetAgentLocation(int index)
+    {
+        Vector3 return_value = new Vector3(0f, 0f, 0f);
+        return_value = AgentList[index].transform.position;
+        return (return_value);
+    }
     void Clock_Set_FastForward()
     {
         clock.timescaler = 0;

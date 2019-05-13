@@ -4,9 +4,10 @@
   "Ward": "4",
   "ID": "Auto",
   "Sex": "Female",
-  "State": "TBD",
-  "Total_Number": 36,
-  "HomeObject": "TestWard2_Home_Array",
+  "State": "Agitated",
+  "Total_Number": 23,
+  "HomeObject": "TestWard3_Home_Array",
+  "Color": "White",
   "Itinerary": {
     "731": "Target DiningHall 1",
 

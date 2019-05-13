@@ -18,6 +18,10 @@ public class PlayerController : MonoBehaviour {
     public GameObject home;
     public GameObject target;
     public Mesh mesh;
+    private GameObject referenceObject;
+    private PlayerController referenceScript;
+    //put Agent Controller Reference here - Really should push this to be a singleton so it is easier to call.
+    public SScholar_Agent_Controller controller_reference;
 
     public Renderer rend2;
     public Bounds bounds;
@@ -66,7 +70,13 @@ public class PlayerController : MonoBehaviour {
         debug_rays = true;
         samplesubdiv = 6;
 
+        //populate the agent controller reference object
+        controller_reference = GameObject.Find("SScholar_Agent_Controller").GetComponent<SScholar_Agent_Controller>();
 
+        //run the test once for each player controller
+        RunTests();
+
+        /*
         target = GameObject.Find("Intervisibility Target");
         if (target != null)
         {
@@ -85,6 +95,7 @@ public class PlayerController : MonoBehaviour {
         {
             Debug.Log("no intervisibility target(s) found!");
         }
+        */
 
 
         /*
@@ -110,6 +121,11 @@ public class PlayerController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
+        //placed here to run the agent sight test over and over
+        //RunTests();
+
+        //All of this needs to get put into it's own methods, I think it is being called over and over for each agent
+        /*
         // Bit shift the index of the layer (8) to get a bit mask
         int layerMask = 1 << 8;
 
@@ -134,6 +150,8 @@ public class PlayerController : MonoBehaviour {
             rend.material.shader = Shader.Find("_Color");
             rend.material.SetColor("_Color", Color.green);
         }
+        */
+
 
         /*  put into a separate method for calling specific sky exposure raycasts
         if (debug_rays = true) {
@@ -170,9 +188,6 @@ public class PlayerController : MonoBehaviour {
             }
         }
         */
-
-
-
 
         //Test for Vector Flag to turn on vector line renderer
         if (vector_render == true) {
@@ -339,10 +354,10 @@ public class PlayerController : MonoBehaviour {
     }
     public void Intervisibility_Raycast()
     {
-        print("Intervisibility Raycast Called");
+        //print("Intervisibility Raycast Called");
 
         GameObject target = GameObject.Find("Intervisibility Target");
-
+        
         Vector3 RayDirection = target.transform.position - transform.position;
         Vector3 NewRayCastLocation = (transform.position + (new Vector3(0.0f, 2.0f, 0.0f)));
 
@@ -388,6 +403,50 @@ public class PlayerController : MonoBehaviour {
     public void RunTests()
     {
         //how to figure out which tests are active and run them? Through the JSON? Through the UI?
+        //run every minute?
+        //test debug to see if this works
+        RunAgentVisibilityTest();
+    }
+    public void RunAgentVisibilityTest()
+    {
+        //need to set up a location to store all the data in, for each agent the distance, type, ward, block, etc.
+        //for each agent in the master list
+        try
+        {
+            for (int i = 0; i < controller_reference.AgentList.Count; i++)
+            {
+                //hold the value of the agent location
+                Vector3 tempvector = controller_reference.AgentList[i].transform.position;
+                //Debug.Log(controller_reference.AgentList[i].transform.position);
+
+                Vector3 RayDirection = tempvector - transform.position - (new Vector3(0.0f, 1.0f, 0.0f));
+                Vector3 NewRayCastLocation = (transform.position + (new Vector3(0.0f, 2.0f, 0.0f)));
+
+                // Bit shift the index of the layer (8) to get a bit mask
+                int layerMask = 1 << 8;
+                // This would cast rays only against colliders in layer 8.
+                // But instead we want to collide against everything except layer 8. The ~ operator does this, it inverts a bitmask.
+                layerMask = ~layerMask;
+                RaycastHit hit;
+
+                Debug.DrawRay(NewRayCastLocation, RayDirection * 50, Color.red);
+
+                if (Physics.Raycast(NewRayCastLocation, RayDirection, out hit, Mathf.Infinity, layerMask))
+                {
+                    print("Ray Hit!");
+                }
+                else
+                {
+                    print("Ray Not Hit");
+                }
+            }
+        }
+        catch (System.Exception e)
+        {
+            print("error");
+        }
+        //make a ray test to that agent and return the information specifics of that agent
+
     }
     public int FindAgentsInView(int CullingDistance)
     {

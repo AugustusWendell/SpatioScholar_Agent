@@ -16,14 +16,14 @@ public class PIV_CamTest : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log("PIV_CamTest Start() called");
+        //Debug.Log("PIV_CamTest Start() called");
     }
 
     // Update is called once per frame
     void Update()
     {
-        Debug.Log("PIV_CamTest Update() called");
-        Debug.Log(PIV_Test());
+        //Debug.Log("PIV_CamTest Update() called");
+        //Debug.Log(PIV_Test());
         
     }
 
