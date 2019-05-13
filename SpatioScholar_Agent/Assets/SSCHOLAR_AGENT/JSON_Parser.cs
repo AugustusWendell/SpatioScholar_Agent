@@ -23,18 +23,19 @@ public class JSON_Parser : MonoBehaviour
 
 void Start()
     {
-
-        Debug.Log("JSON load start called");
+        //Debug.Log("JSON load start called");
 
         DirectoryInfo dir = new DirectoryInfo("Assets/Sscholar_Agent_inits/");
         FileInfo[] info = dir.GetFiles("*.*");
 
         AgentInitJsonFilenames = new string[info.Length];
 
+        /*
         foreach (FileInfo f in info)
         {
             Debug.Log(f.ToString());
         }
+        */
 
         for(int i = 0; i < info.Length; i++)
         {

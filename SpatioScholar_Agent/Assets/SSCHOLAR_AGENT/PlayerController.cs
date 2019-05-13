@@ -385,6 +385,20 @@ public class PlayerController : MonoBehaviour {
             print("Ray not Hit!");
         }
     }
+    public void RunTests()
+    {
+        //how to figure out which tests are active and run them? Through the JSON? Through the UI?
+    }
+    public int FindAgentsInView(int CullingDistance)
+    {
+        int return_value = 0;
+        /*
+         * For each agent in the simulation{
+         * Send one raycast from this agent to the target agent, if the raycast is successful and length is lesser than the CullingDistance then increment the return value
+         * }
+         */
+        return (return_value);
+    }
 
     public void Sky_Exposure()
     {

@@ -136,6 +136,22 @@ public class SScholar_Agent_Controller : MonoBehaviour
             print("error");
         }
     }
+    //RunAgentTests is an abstract method 
+    public void RunAgentTests()
+    {
+        PauseAgents();
+        //cycle through each agent instructing that any active tests be run
+        //for each agent run method RunTests()
+        ResumeAgents();
+    }
+    public void PauseAgents()
+    {
+
+    }
+    public void ResumeAgents()
+    {
+
+    }
 
     void ToggleDebugRays()
         {
