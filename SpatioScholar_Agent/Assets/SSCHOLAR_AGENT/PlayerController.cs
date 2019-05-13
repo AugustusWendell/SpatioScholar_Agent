@@ -429,11 +429,14 @@ public class PlayerController : MonoBehaviour {
                 layerMask = ~layerMask;
                 RaycastHit hit;
 
-                Debug.DrawRay(NewRayCastLocation, RayDirection * 50, Color.red);
-
                 if (Physics.Raycast(NewRayCastLocation, RayDirection, out hit, Mathf.Infinity, layerMask))
                 {
-                    print("Ray Hit!");
+                    //test Ray hit object for Agent Name?
+                    if (hit.collider.gameObject.name == "Agent_Mesh_Capsule")
+                    {
+                        print("Ray Hit! "+ hit.collider.gameObject.name);
+                        Debug.DrawRay(NewRayCastLocation, RayDirection * 1, Color.red);
+                    }
                 }
                 else
                 {
@@ -446,6 +449,8 @@ public class PlayerController : MonoBehaviour {
             print("error");
         }
         //make a ray test to that agent and return the information specifics of that agent
+
+        //MUST STORE THE RESULTS IN THE AGENT FOR LATER DOWNLOAD INTO A CSV FILE!
 
     }
     public int FindAgentsInView(int CullingDistance)

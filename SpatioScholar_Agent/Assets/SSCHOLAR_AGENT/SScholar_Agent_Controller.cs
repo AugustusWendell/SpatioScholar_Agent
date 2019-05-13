@@ -142,15 +142,28 @@ public class SScholar_Agent_Controller : MonoBehaviour
         PauseAgents();
         //cycle through each agent instructing that any active tests be run
         //for each agent run method RunTests()
+        for (int i = 0; i < AgentList.Count; i++)
+        {
+            //fire off the generic RunTests method on every agent
+            AgentList[i].GetComponent<PlayerController>().RunTests();
+        }
         ResumeAgents();
     }
     public void PauseAgents()
     {
-
+        //Debug.Log("Pause Agents");
+        for (int i = 0; i < AgentList.Count; i++)
+        {
+            AgentList[i].Stop();
+        }
     }
     public void ResumeAgents()
     {
-
+        //Debug.Log("Resume Agents");
+        for (int i = 0; i < AgentList.Count; i++)
+        {
+            AgentList[i].Resume();
+        }
     }
 
     void ToggleDebugRays()

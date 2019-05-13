@@ -10,11 +10,13 @@ public class SScholar_Agent_Clock : MonoBehaviour {
     public int timebuffer = 0;
     public int timescaler = 0;
     public string itinerary_time;
+    public SScholar_Agent_Controller controller_reference;
 
     // Use this for initialization
     void Start () {
         Debug.Log("Clock initialized");
-	}
+        controller_reference = GameObject.Find("SScholar_Agent_Controller").GetComponent<SScholar_Agent_Controller>();
+    }
 	
 	// Update is called once per frame
 	void Update () {
@@ -24,6 +26,8 @@ public class SScholar_Agent_Clock : MonoBehaviour {
     public void increment_time()
     {
         increment_minute();
+        //run the Agent Tests each minute......
+        controller_reference.RunAgentTests();
     }
 
     void increment_hour()
