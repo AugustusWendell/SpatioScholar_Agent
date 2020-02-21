@@ -4,8 +4,9 @@ using UnityEngine;
 using UnityEngine.AI;
 
 public class PlayerController : MonoBehaviour {
-    public SScholar_Agent_Controller controller;
-    public Camera cam;
+    //public SScholar_Agent_Controller controller;
+    //public Camera cam;
+    public bool AtoATesting = false;
     public NavMeshAgent agent;
     public bool vector_render = false;
     public bool attributes_render = false;
@@ -15,7 +16,7 @@ public class PlayerController : MonoBehaviour {
     public float temp_sky_exposure;
     private float hit;
     public bool intervisibility = false;
-    public GameObject home;
+    //public GameObject home;
     public GameObject target;
     public Mesh mesh;
     private GameObject referenceObject;
@@ -35,6 +36,7 @@ public class PlayerController : MonoBehaviour {
     public float z_start;
     public int samplesubdiv = 3;
     public Color AgentColor;
+    public List<AgentToAgentTestResults> AResults;
 
     public bool dropmarker = false;
 
@@ -46,22 +48,17 @@ public class PlayerController : MonoBehaviour {
     public string State;
     public int Total_Number;
     public Color Agent_Color;
-    public string HomeObjectName = "Home_ObjectName";
+    string HomeObjectName = "Home_ObjectName";
     public GameObject HomeObject;
     public int clock_hour = 0;
 
+    public Dictionary<string, string> Itinerary = new Dictionary<string, string>();
+
+    //need to define a dictionary to store inter agent to agent test numbers and time stamp
+
     //for color change to code agents
     Material m_Material;
-
-    /*
-    public Dictionary<string, string> Itinerary = new Dictionary<string, string>()
-    {
-        { "110", "Target 1" },
-        { "320", "Target 2" },
-        { "530", "Target 1" }
-    };
-    */
-    public Dictionary<string, string> Itinerary = new Dictionary<string, string>();
+    
 
     // Use this for initialization
     void Start () {
@@ -74,7 +71,7 @@ public class PlayerController : MonoBehaviour {
         controller_reference = GameObject.Find("SScholar_Agent_Controller").GetComponent<SScholar_Agent_Controller>();
 
         //run the test once for each player controller
-        RunTests();
+        //RunTests();
 
         /*
         target = GameObject.Find("Intervisibility Target");
@@ -125,7 +122,7 @@ public class PlayerController : MonoBehaviour {
         //RunTests();
 
         //All of this needs to get put into it's own methods, I think it is being called over and over for each agent
-        /*
+        
         // Bit shift the index of the layer (8) to get a bit mask
         int layerMask = 1 << 8;
 
@@ -136,7 +133,8 @@ public class PlayerController : MonoBehaviour {
         if(intervisibility == true) {
             //call the intervisibility Raycast method
             Debug.Log("intervisibility toggle = true, calling the bounding raycast method");
-            Intervisibility_Bounding_Raycast(samplesubdiv);
+            Intervisibility_Raycast();
+            //Intervisibility_Bounding_Raycast(samplesubdiv);
         }
 
         if(dropmarker == true)
@@ -150,7 +148,7 @@ public class PlayerController : MonoBehaviour {
             rend.material.shader = Shader.Find("_Color");
             rend.material.SetColor("_Color", Color.green);
         }
-        */
+        
 
 
         /*  put into a separate method for calling specific sky exposure raycasts
@@ -374,7 +372,7 @@ public class PlayerController : MonoBehaviour {
             print("Ray Hit!");
             if(hit.collider.gameObject.name == "Intervisibility Target")
             {
-                if(controller.visibility_marker == true)
+                if(controller_reference.visibility_marker == true)
                 {
                     //drop a marker
                     Vector3 AddMarkerLocation = gameObject.transform.position;
@@ -405,7 +403,11 @@ public class PlayerController : MonoBehaviour {
         //how to figure out which tests are active and run them? Through the JSON? Through the UI?
         //run every minute?
         //test debug to see if this works
-        RunAgentVisibilityTest();
+        Debug.Log("Run Tests Method Called");
+        if(AtoATesting == true)
+        {
+            RunAgentVisibilityTest();
+        }
     }
     public void RunAgentVisibilityTest()
     {
@@ -413,6 +415,7 @@ public class PlayerController : MonoBehaviour {
         //for each agent in the master list
         try
         {
+            //for each Agent in the master list......
             for (int i = 0; i < controller_reference.AgentList.Count; i++)
             {
                 //hold the value of the agent location
@@ -435,12 +438,21 @@ public class PlayerController : MonoBehaviour {
                     if (hit.collider.gameObject.name == "Agent_Mesh_Capsule")
                     {
                         print("Ray Hit! "+ hit.collider.gameObject.name);
+                        //store clock time, MyObjectName, HitAgentName, HitAgentType
+                        PlayerController hitPC = hit.collider.gameObject.GetComponentInParent<PlayerController>();
+                        //Debug.Log(hitPC.Type);
+
+                        //build the agent test results into an object and store them in the List
+                        AgentToAgentTestResults TempResults = new AgentToAgentTestResults(controller_reference.clock.hour.ToString()+ controller_reference.clock.minute.ToString(), hitPC.Type, hitPC.Block, hitPC.Ward, hitPC.ID, hitPC.Sex, hitPC.State);
+                        AResults.Add(TempResults);
+
+                        //maybe build a csv file by raw structure.....
                         Debug.DrawRay(NewRayCastLocation, RayDirection * 1, Color.red);
                     }
                 }
                 else
                 {
-                    print("Ray Not Hit");
+                    //print("Ray Not Hit");
                 }
             }
         }
@@ -521,22 +533,30 @@ public class PlayerController : MonoBehaviour {
 
     }
     */
+
+
+        //why is this called SetHour??
     public void SetHour(int a, string b)
     {
+        //Debug.Log("SetHour method called within the PlayerController");
+
         Vector3 newtargetposition = new Vector3(0,0,0);
         NavMeshAgent tempNav = gameObject.GetComponent<NavMeshAgent>();
         //Debug.Log("Agent SetHour called with " + a + "  " + b);
+        //Does the clock_hour actually get used?
         clock_hour = a;
         //if my itinerary has a place to go at this hour then execute a change in target
         if (Itinerary.ContainsKey(b))
         {
             string TT = Itinerary[b];
-           // Debug.Log("Key found in Itinerary Dictionary   Value  = " + TT);
+            //Debug.Log("Key found in Itinerary Dictionary   Value  = " + TT);
             if(Itinerary[b] == "Home")
             {
+                //Debug.Log("Going Home");
                 //go home
                 newtargetposition = gameObject.GetComponent<PlayerController>().HomeObject.transform.position;
-                controller.clock.timescaler = 500;
+                controller_reference.clock.timescaler = 2000;
+                this.Start();
             }
             else
             {
@@ -546,13 +566,20 @@ public class PlayerController : MonoBehaviour {
                 {
                     //query target for whatever type of location the target knows to deliver, for instance a random value within it.
                     newtargetposition = TT1.GetComponent<SScholar_Agent_Target_Logic>().GetTargetLocation();
-
-                    controller.clock.timescaler = 500;
+                    //setting these higher in an attempt to slow down the clock
+                    controller_reference.clock.timescaler = 2000;
+                    this.Start();
                 }
                 else
                 {
+                    //Debug.Log("Going to " + TT1);
                     newtargetposition = TT1.transform.position;
-                    controller.clock.timescaler = 500;
+                    //Debug.Log("Setting navigation to " + newtargetposition);
+                    //make a call to start the navigation movement of agent?
+
+                    //setting these higher in an attempt to slow down the clock
+                    controller_reference.clock.timescaler = 2000;
+                    this.Start();
                 }
 
                 //Debug.Log("new target Vector3 position = " + newtargetposition);
@@ -560,6 +587,7 @@ public class PlayerController : MonoBehaviour {
             
             
             tempNav.SetDestination(newtargetposition);
+            //Debug.Log("Setting navigation to " + newtargetposition);
             tempNav.speed = 2;
             //Debug.Log("Current NavMeshAgent destination Vector3 = " + tempNav.destination);
             
@@ -568,7 +596,7 @@ public class PlayerController : MonoBehaviour {
 
     public void SetColor(Color c)
     {
-        Debug.Log("Agent SetColor method called");
+        //Debug.Log("Agent SetColor method called");
         //set color
         Component[] renderers;
 
@@ -588,19 +616,30 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
+    //This is a master agent initialization script to set all starting variables and object pointers
     public void Init_Agent_From_JSON(AgentInit a)
     {
-        Debug.Log("Instance of new Agent Init method called");
+        //set camera? why
+        //set 
+        Ward = a.Ward;
+        Block = a.Block;
+        Sex = a.Sex;
+        Type = a.Type;
+        State = a.State;
+        ID = a.ID;
+
+
+        //Debug.Log("Instance of new Agent Init method called");
         if (a.Color == "Red")
         {
-            Debug.Log("Agent color definition in JSON registers as Red");
+            //Debug.Log("Agent color definition in JSON registers as Red");
             SetColor(Color.red);
         }
         else
         {
             if (a.Color == "Yellow")
             {
-                Debug.Log("Agent color definition in JSON registers as Yellow");
+                //Debug.Log("Agent color definition in JSON registers as Yellow");
                 SetColor(Color.yellow);
             }
             else
@@ -608,15 +647,49 @@ public class PlayerController : MonoBehaviour {
 
                 if (a.Color == "White")
                 {
-                    Debug.Log("Agent color definition in JSON registers as White");
+                    //Debug.Log("Agent color definition in JSON registers as White");
                     SetColor(Color.white);
                 }
                 else
                 {
-                    Debug.Log("Agent color definition in JSON does NOT register as Red");
+                    //Debug.Log("Agent color definition in JSON does NOT register as Red");
                     SetColor(Color.blue);
                 }
             }
         }
+    }
+}
+
+//each positive Agent To Agent Raycast hits stores the results in one of these objects.
+//These should be stored in a single list that can be ripped into a single line of a CSV
+[System.Serializable]
+public class AgentToAgentTestResults
+{
+    //clock time of positive test
+    public string Time;
+    public string Type;
+    public string Block;
+    public string Ward;
+    public string ID;
+    public string Sex;
+    public string State;
+
+    //definition method called to make each object
+    public AgentToAgentTestResults(string t, string ty, string bl, string wa, string id, string se, string st)
+    {
+        Time = t;
+        Type = ty;
+        Block = bl;
+        Ward = wa;
+        ID = id;
+        Sex = se;
+        State = st;
+    }
+
+    public override string ToString()
+    {
+        string returnvalue = "This is an internal ToString override";
+        //returnvalue = Type;
+        return returnvalue;
     }
 }

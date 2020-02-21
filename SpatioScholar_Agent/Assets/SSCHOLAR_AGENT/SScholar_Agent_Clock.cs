@@ -8,13 +8,16 @@ public class SScholar_Agent_Clock : MonoBehaviour {
     public int minute = 0;
     public string display_time;
     public int timebuffer = 0;
-    public int timescaler = 0;
+    public int timescaler = 30;
+
+    public int minutes_per_test = 15;
+    public int testing_time = 0;
     public string itinerary_time;
     public SScholar_Agent_Controller controller_reference;
 
     // Use this for initialization
     void Start () {
-        Debug.Log("Clock initialized");
+        //Debug.Log("Clock initialized");
         controller_reference = GameObject.Find("SScholar_Agent_Controller").GetComponent<SScholar_Agent_Controller>();
     }
 	
@@ -26,8 +29,6 @@ public class SScholar_Agent_Clock : MonoBehaviour {
     public void increment_time()
     {
         increment_minute();
-        //run the Agent Tests each minute......
-        controller_reference.RunAgentTests();
     }
 
     void increment_hour()
@@ -35,6 +36,8 @@ public class SScholar_Agent_Clock : MonoBehaviour {
         if(hour < 23)
         {
             hour++;
+            //run the Agent Tests each hour......
+            //controller_reference.RunAgentTests();
         }
         else
         {
@@ -46,10 +49,17 @@ public class SScholar_Agent_Clock : MonoBehaviour {
     {
         if (minute < 59)
         {
-            
-            if(timebuffer > timescaler)
+
+            if (timebuffer > timescaler)
             {
                 minute++;
+
+                testing_time++;
+                if (minutes_per_test < testing_time)
+                {
+                    controller_reference.RunAgentTests();
+                    testing_time = 0;
+                }
                 timebuffer = 0;
             }
             else

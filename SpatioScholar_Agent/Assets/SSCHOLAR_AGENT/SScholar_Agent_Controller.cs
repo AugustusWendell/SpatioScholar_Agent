@@ -14,6 +14,7 @@ public class SScholar_Agent_Controller : MonoBehaviour
     public Button m_StartSim, m_PauseSim;
     public Toggle IntervisibilityToggle, m_VisibilityMarker;
     public Toggle AgentAttributesDisplayToggle;
+    public Toggle AgentToAgentTestToggle;
     public GameObject controller;
     public GameObject target1;
     public GameObject target2;
@@ -24,6 +25,7 @@ public class SScholar_Agent_Controller : MonoBehaviour
     public SScholar_Agent_Clock clock;
     public Text clock_display;
     public bool visibility_marker;
+    public int AgentToAgentTestFrequency = 10;
 
     //for use changing variables
     GameObject referenceObject;
@@ -47,13 +49,15 @@ public class SScholar_Agent_Controller : MonoBehaviour
         m_PauseSim.onClick.AddListener(delegate { PauseSim(); });
         m_StartSim.onClick.AddListener(delegate { StartSim(); });
         m_ClockFastForward.onClick.AddListener(delegate { Clock_Set_FastForward(); });
-        m_VisibilityMarker.onValueChanged.AddListener(delegate { Set_Visibility_Marker(); });
+        //m_VisibilityMarker.onValueChanged.AddListener(delegate { Set_Visibility_Marker(); });
 
         IntervisibilityToggle.onValueChanged.AddListener(delegate { ToggleIntervisibility(); });
         AgentAttributesDisplayToggle.onValueChanged.AddListener(delegate { ToggleAgentAttributeVisibility(); });
+        AgentToAgentTestToggle.onValueChanged.AddListener(delegate { ToggleAgentToAgentTesting(); });
 
         m_CSV_SaveButton.onClick.AddListener(delegate {
             //GetComponent<CSV_output>().Save();
+            Debug.Log("button called");
             SaveCSV();
         });
         m_DebugRaysButton.onClick.AddListener(delegate { ToggleDebugRays(); });
@@ -113,6 +117,7 @@ public class SScholar_Agent_Controller : MonoBehaviour
 
     void SaveCSV()
     {
+        Debug.Log("Agent Controller SaveCSV method called");
         GetComponent<CSV_output>().Save();
     }
 
@@ -181,6 +186,7 @@ public class SScholar_Agent_Controller : MonoBehaviour
         }
     }
 
+    //AddAgent is called once per agent to add them as an instance into the simulation
     public void AddAgent()
     {
         //Default Start Location for new agents - this ough to be controlled through a more sophisticated method!
@@ -194,7 +200,7 @@ public class SScholar_Agent_Controller : MonoBehaviour
 
         Quaternion AddAgentRotation = new Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
         NavMeshAgent newAgent = (NavMeshAgent)Instantiate(SSAgent, AddAgentLocation, AddAgentRotation);
-        newAgent.GetComponent<PlayerController>().controller = gameObject.GetComponent<SScholar_Agent_Controller>();
+        newAgent.GetComponent<PlayerController>().controller_reference = gameObject.GetComponent<SScholar_Agent_Controller>();
         AgentList.Add(newAgent);
         for (int i = 0; i < AgentList.Count; i++)
             {
@@ -203,14 +209,24 @@ public class SScholar_Agent_Controller : MonoBehaviour
         }
         }
 
-    //This is called by the JSON parser to make each new agent
+    //This is called by the JSON parser iteratively to make each new agent, it is handed a Dictionary built from the JSON importer
     public void Initialize_Agent(AgentInit a, int i)
     {
+        //used to push out the AgentInit data
+        //Debug.Log(a);
+
+
+        //finds the single home object outlined in the Agent Definition
         GameObject home_obj = GameObject.Find(a.HomeObject);
+        //Makes a new Vector3 location position to instantiate new agent into
         Vector3 AddAgentLocation;
+        //Not sure what this is?
         GameObject Home;
+
+        //test if the Home Object has the coordinator script assigned.
         if (home_obj.GetComponent<SScholar_Agent_HomeObjectCoordinator>())
         {
+            //This block tries to search for sub objects under home to assign to the actual singular "home" variable in the specific agent
             try
             {
                 //if the number of agents in the JSON file does not match the number of unique home objects in the array default to the first object in the array for all extra agents
@@ -219,12 +235,17 @@ public class SScholar_Agent_Controller : MonoBehaviour
                     AddAgentLocation = home_obj.GetComponent<SScholar_Agent_HomeObjectCoordinator>().Object_Array[1].transform.position;
                     Home = home_obj.GetComponent<SScholar_Agent_HomeObjectCoordinator>().Object_Array[1];
 
+                    //initialize a rotation for each agent, no reason yet to make this specific to the agent so it is 0,0,0,0
                     Quaternion AddAgentRotation = new Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
+                    //Instantiates a single agent
                     NavMeshAgent newAgent = Instantiate(SSAgent, AddAgentLocation, AddAgentRotation);
-                    newAgent.GetComponent<PlayerController>().Itinerary = a.Itinerary;
-                    newAgent.GetComponent<PlayerController>().HomeObject = Home;
+                    PlayerController PC = newAgent.GetComponent<PlayerController>();
+                    PC.Itinerary = a.Itinerary;
+                    PC.HomeObject = Home;
                     //what should become a global init that transfers AgentInit values to the Agent Instance
-                    newAgent.GetComponent<PlayerController>().Init_Agent_From_JSON(a);
+                    //Need to call a single master new agent initialization script - Might need logic or variables to hold the objects this will use to populat
+                    PC.Init_Agent_From_JSON(a);
+
                     AgentList.Add(newAgent);
                 }
                 else
@@ -234,10 +255,11 @@ public class SScholar_Agent_Controller : MonoBehaviour
 
                     Quaternion AddAgentRotation = new Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
                     NavMeshAgent newAgent = Instantiate(SSAgent, AddAgentLocation, AddAgentRotation);
-                    newAgent.GetComponent<PlayerController>().Itinerary = a.Itinerary;
-                    newAgent.GetComponent<PlayerController>().HomeObject = Home;
+                    PlayerController PC = newAgent.GetComponent<PlayerController>();
+                    PC.Itinerary = a.Itinerary;
+                    PC.HomeObject = Home;
                     //what should become a global init that transfers AgentInit values to the Agent Instance
-                    newAgent.GetComponent<PlayerController>().Init_Agent_From_JSON(a);
+                    PC.Init_Agent_From_JSON(a);
                     AgentList.Add(newAgent);
                 }
             }
@@ -247,17 +269,20 @@ public class SScholar_Agent_Controller : MonoBehaviour
             }
         }
         else
+        //This happens if there is no sub object coordinator
         {
+            Debug.Log("This should be called once in the test scene");
             AddAgentLocation = home_obj.transform.position;
             Home = home_obj;
 
             Quaternion AddAgentRotation = new Quaternion(0.0f, 0.0f, 0.0f, 0.0f);
             NavMeshAgent newAgent = Instantiate(SSAgent, AddAgentLocation, AddAgentRotation);
-            newAgent.GetComponent<PlayerController>().Itinerary = a.Itinerary;
-            newAgent.GetComponent<PlayerController>().HomeObject = Home;
-
+            PlayerController PC = newAgent.GetComponent<PlayerController>();
+            PC.Itinerary = a.Itinerary;
+            PC.HomeObject = Home;
+            Debug.Log("set the home object of the PlayerController = " + PC.HomeObject);
             //what should become a global init that transfers AgentInit values to the Agent Instance
-            newAgent.GetComponent<PlayerController>().Init_Agent_From_JSON(a);
+            PC.Init_Agent_From_JSON(a);
             AgentList.Add(newAgent);
         }
         
@@ -339,6 +364,21 @@ public class SScholar_Agent_Controller : MonoBehaviour
         }
     }
 
+    void ToggleAgentToAgentTesting()
+    {
+        try
+        {
+            for (int i = 0; i < AgentList.Count; i++)
+            {
+                //Do Something
+            }
+        }
+        catch (Exception e)
+        {
+            print("error");
+        }
+    }
+
     void ToggleVector()
     {
 
@@ -401,18 +441,27 @@ public class SScholar_Agent_Controller : MonoBehaviour
         clock_display.text = clock.return_time();
         //alert agents of time
 
+        //Debug.Log("Calling the clock method navigation reset. Found that the AgentList.Count = "+ AgentList.Count);
+
         try
         {
+            //Debug.Log("trying to set the navigation target");
             for (int i = 0; i < AgentList.Count; i++)
             {
+                //Debug.Log("successful navigation reset call by clock object for object "+i);
                 NavMeshAgent t = AgentList[i];
-                referenceObject = t.gameObject;
-                referenceScript = referenceObject.GetComponent<PlayerController>();
+                //Debug.Log("found agent " + t);
+                
+                //referenceScript = referenceObject.GetComponent<PlayerController>();
+                referenceScript = t.GetComponent<PlayerController>();
+                //Debug.Log("Found reference script " + referenceScript);
+                //Debug.Log(clock.return_itinerary_time());
                 referenceScript.SetHour(clock.hour, clock.return_itinerary_time());
             }
         }
         catch (Exception e)
         {
+            //Debug.Log("Exception = " + e);
             print("error setting agents internal clock");
         }
     }
@@ -427,9 +476,11 @@ public class SScholar_Agent_Controller : MonoBehaviour
         return_value = AgentList[index].transform.position;
         return (return_value);
     }
-    void Clock_Set_FastForward()
+    //hooked up to the UI, speeds up the clock so it moves quickly towards the next itinerary item
+    public void Clock_Set_FastForward()
     {
-        clock.timescaler = 0;
+        Debug.Log("clock fast forward method called");
+        clock.timescaler = 5;
         /*
          * try
         {

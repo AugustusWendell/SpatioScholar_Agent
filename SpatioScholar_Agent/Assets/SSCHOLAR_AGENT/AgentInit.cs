@@ -19,15 +19,14 @@ public class AgentInit
     public string Color;
 
     public Dictionary<string, string> Itinerary;
-
+    
     public override string ToString()
     {
         string returnvalue = "yo";
-        //returnvalue = testhours.ToString();
-        //returnvalue = "AgentInit ToString return = " + Type + " " + Block + "       dictionary = " + Itinerary.ToString();
-        //returnvalue = testhours["key2"];
+        returnvalue = "AgentInit ToString return = " + Type + " " + Block + " " + Ward + " " + ID + " " + Sex + " " + State + "       dictionary = " + Itinerary.ToString();
         return returnvalue;
     }
+    
 
     public string ReturnTest()
     {

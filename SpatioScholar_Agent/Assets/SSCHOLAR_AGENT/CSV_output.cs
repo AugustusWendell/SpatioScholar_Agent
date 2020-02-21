@@ -8,14 +8,75 @@ using UnityEngine.AI;
 
 public class CSV_output : MonoBehaviour
 {
+    public SScholar_Agent_Controller controller;
     private List<string[]> rowData = new List<string[]>();
 
 
     // Use this for initialization
     void Start()
     {
-        //Calls the Save() method to save out the CSV file
-        //Save();
+        controller = GetComponent<SScholar_Agent_Controller>();
+    }
+
+    public void SaveAgentToAgentTest()
+    {
+        Debug.Log("SaveAgentToAgentTest called");
+        //for each agent
+        //write a unique CSV file that dumps the contents of several dictionaries.......
+        int r = controller.AgentList.Count;
+        for (int i = 0; i < r; i++)
+        {
+            //initialize the unique CSV file for this agent
+            //not sure any specific initialization is needed prior to gathering the data
+            Debug.Log("testing agent " + i);
+            PlayerController tempagent = controller.AgentList[i].GetComponent<PlayerController>();
+            if (tempagent.AtoATesting == true)
+            {
+                Debug.Log("gathering data for agent " + i);
+                //For each single Agent to Agent test result
+                for (int j = 0; j < tempagent.AResults.Count; j++)
+                {
+                    //Add this test result to one line in the CSV file for this Agent's results
+                    string[] rowDataTemp = new string[7];
+                    rowDataTemp[0] = tempagent.AResults[j].Time;
+                    rowDataTemp[1] = tempagent.AResults[j].Block;
+                    rowDataTemp[2] = tempagent.AResults[j].Ward;
+                    rowDataTemp[3] = tempagent.AResults[j].Sex;
+                    rowDataTemp[4] = tempagent.AResults[j].Type;
+                    rowDataTemp[5] = tempagent.AResults[j].State;
+                    rowDataTemp[6] = tempagent.AResults[j].ID;
+                    //add the rest of the data stored in the temp object
+                    rowData.Add(rowDataTemp);
+                }
+
+                //invoke specific CSV file writing functions
+
+                string[][] output = new string[rowData.Count][];
+
+                for (int k = 0; k < output.Length; k++)
+                {
+                    output[k] = rowData[k];
+                }
+
+                int length = output.GetLength(0);
+                string delimiter = ",";
+
+                StringBuilder sb = new StringBuilder();
+
+                for (int index = 0; index < length; index++)
+                    sb.AppendLine(string.Join(delimiter, output[index]));
+
+
+                string filePath = getPath(i);
+                Debug.Log(filePath);
+
+                StreamWriter outStream = System.IO.File.CreateText(filePath);
+                outStream.WriteLine(sb);
+                outStream.Close();
+            }
+
+
+        }
     }
 
     public void Save()
@@ -110,6 +171,11 @@ public class CSV_output : MonoBehaviour
 #else
         return Application.dataPath +"/"+"Saved_data.csv";
 #endif
+    }
+    // Following method is used to retrive the relative path as device platform
+    private string getPath(int x)
+    {
+        return Application.dataPath + "/CSV/" + "Saved_data"+"_"+x+".csv";
     }
 }
 

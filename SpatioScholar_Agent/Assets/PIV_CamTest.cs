@@ -17,14 +17,39 @@ public class PIV_CamTest : MonoBehaviour
     void Start()
     {
         //Debug.Log("PIV_CamTest Start() called");
+        AssignTarget();
+        CameraFocus();
     }
 
     // Update is called once per frame
     void Update()
     {
         //Debug.Log("PIV_CamTest Update() called");
-        //Debug.Log(PIV_Test());
-        
+        CameraFocus();
+        Debug.Log("PIV_Test result = " + PIV_Test());
+    }
+    
+
+    void CameraFocus()
+    {
+        //Vector3 pointOnside = target.transform.position + new Vector3(target.transform.localScale.x * 0.5f, 0.0f, target.transform.localScale.z * 0.5f);
+        //float aspect = (float)Screen.width / (float)Screen.height;
+        //float maxDistance = (target.transform.localScale.y * 0.5f) / Mathf.Tan(Mathf.Deg2Rad * (PIV_Cam.fieldOfView / aspect));
+        //PIV_Cam.transform.position = Vector3.MoveTowards(pointOnside, target.transform.position, -maxDistance);
+
+
+        //direct camera each frame to look at the target....but this might need to change in the future with large objects. Will need to look at the visible portion?
+        //for instance, how to focus on the large wall at Samos? Focusing on the center of the object will not work well?
+        PIV_Cam.transform.LookAt(target.transform.position);
+
+    }
+
+    void AssignTarget()
+    {
+        //find "PIV_Target";
+        //Assign that object into the target object
+
+        target = GameObject.Find("PIV_Target");
     }
 
     void CreateTexture()
@@ -69,7 +94,7 @@ public class PIV_CamTest : MonoBehaviour
         int height = PIV_Texture.height;
         float count = 0;
 
-        Debug.Log("pixel comparison");
+        //Debug.Log("pixel comparison");
         for (int h = 0; h < height; h++)
         {
             for(int w = 0; w < width; w++)
@@ -90,7 +115,7 @@ public class PIV_CamTest : MonoBehaviour
         return_value = count / (width * height);
         //return_value = count;
 
-        Debug.Log(return_value);
+        //Debug.Log(return_value);
         return (return_value);
     }
 }
