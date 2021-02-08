@@ -17,11 +17,14 @@ public class CreateBounds : MonoBehaviour
     private Dictionary<GameObject, Dictionary<Vector3, Vector2>> objectVectorTextureCoords; // Only contains texture coords where Vector3 is a hit
     private float elapsed_time = 0f;
 
+    // For the aggregated viewpoint
+    int time_increment = 1;
+
     // Start is called before the first frame update
     void Start()
     {
         // Test with sample_targets
-        GameObject[] sample_targets = new GameObject[] { GameObject.Find("Intervisibility Target") //GameObject.Find("Layer:3d_monastery_church"), GameObject.Find("Layer:3d_big_cloister_roof"), GameObject.Find("Layer:3d_gothic_cloister"),
+        GameObject[] sample_targets = new GameObject[] { GameObject.Find("Layer:3d_monastery_church") //GameObject.Find("Layer:3d_big_cloister_roof"), GameObject.Find("Layer:3d_gothic_cloister"),
                                                            // GameObject.Find("Layer:3d_monastery_fountain")
                                                                 };
         DeriveTargetsBounds(sample_targets);
@@ -49,14 +52,25 @@ public class CreateBounds : MonoBehaviour
             time_access.Add(temp_dict_gObject_vectors);
             time_access_textures.Add(temp_dict_gObject_vector_textures);
 
-            // Test non-timed object coloring
-            List<GameObject> textureObjects = new List<GameObject>(objectVectorTextureCoords.Keys);
-            if (time_access.Count > 3)
+            // Test object coloring once path has been completed.
+            /*if (time_access.Count > 35)
             {
-                DrawOnObjectList(textureObjects, 4);
-            }
+                List<GameObject> textureObjects = new List<GameObject>(objectVectorTextureCoords.Keys);
+                ClearObjectListTextures(textureObjects);
+                DrawOnObjectList(textureObjects, time_increment);
+                time_increment++;
+            }*/
 
-            }
+            // Test object coloring in real-time
+            if (time_access.Count > 0)
+            {
+                List<GameObject> textureObjects = new List<GameObject>(objectVectorTextureCoords.Keys);
+                ClearObjectListTextures(textureObjects);
+                DrawOnObjectList(textureObjects, time_access.Count);
+            } 
+
+
+        }
 
         if (time_access.Count > 4 & TEST_STRUCTURE)
         {
@@ -153,7 +167,6 @@ public class CreateBounds : MonoBehaviour
                             if (DEBUG_RAYS) Debug.DrawRay(RayCastLocation, RayDirection, Color.red, 5f);
                             objectVectors[target].Add(subdivision_target, true);
                             objectVectorTextureCoords[target].Add(subdivision_target, hit.textureCoord);
-                            //DrawOnObject(target, hit.textureCoord);
 
                         }
                         else
@@ -319,6 +332,16 @@ public class CreateBounds : MonoBehaviour
         rend.material.mainTexture = tempTexture;
 
 
+    }
+
+    // Replaces target(s) textures with 1366x768 white textures.
+    public void ClearObjectListTextures(List<GameObject> targets) 
+    {
+        foreach (GameObject target in targets) 
+        {
+            Texture2D baseTexture = new Texture2D(1366, 768, TextureFormat.ARGB32, false);
+            target.transform.GetComponent<Renderer>().material.mainTexture = baseTexture;
+        }
     }
 
 
