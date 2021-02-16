@@ -9,6 +9,9 @@ public class CreateBounds : MonoBehaviour
     public float DRAWING_RADIUS = 0.13f;
     public bool TEST_STRUCTURE = true;
     public bool DEBUG_RAYS = true;
+    public int SUBDIVISIONS_X = 200;
+    public int SUBDIVISIONS_Y = 200;
+    public int SUBDIVISONS_Z = 2;
 
     private List<Dictionary<GameObject, Dictionary<Vector3, bool>>> time_access = new List<Dictionary<GameObject, Dictionary<Vector3, bool>>>();
     private List<Dictionary<GameObject, Dictionary<Vector3, Vector2>>> time_access_textures = new List<Dictionary<GameObject, Dictionary<Vector3, Vector2>>>();
@@ -46,7 +49,7 @@ public class CreateBounds : MonoBehaviour
             Dictionary<GameObject, Dictionary<Vector3, bool>> temp_dict_gObject_vectors;
             Dictionary<GameObject, Dictionary<Vector3, Vector2>> temp_dict_gObject_vector_textures;
 
-            BoundedRaycast(200, 200, 2, gObjects, out temp_dict_gObject_vectors, out temp_dict_gObject_vector_textures);
+            BoundedRaycast(SUBDIVISIONS_X, SUBDIVISIONS_Y, SUBDIVISONS_Z, gObjects, out temp_dict_gObject_vectors, out temp_dict_gObject_vector_textures);
 
             // Add returned dictionary to list
             time_access.Add(temp_dict_gObject_vectors);
