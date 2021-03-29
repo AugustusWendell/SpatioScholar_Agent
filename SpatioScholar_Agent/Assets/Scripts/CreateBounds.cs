@@ -13,12 +13,24 @@ public class CreateBounds : MonoBehaviour
     public int SUBDIVISIONS_Y = 200;
     public int SUBDIVISONS_Z = 2;
 
+    //public variables for blur effect
+    public bool BLUR_ACTIVE = true;
+    public int BLUR_RADIUS = 2;
+    public int BLUR_ITERS = 2;
+
     private List<Dictionary<GameObject, Dictionary<Vector3, bool>>> time_access = new List<Dictionary<GameObject, Dictionary<Vector3, bool>>>();
     private List<Dictionary<GameObject, Dictionary<Vector3, Vector2>>> time_access_textures = new List<Dictionary<GameObject, Dictionary<Vector3, Vector2>>>();
     private Dictionary<GameObject, Bounds> objectBounds = new Dictionary<GameObject, Bounds>();
     private Dictionary<GameObject, Dictionary<Vector3, bool>> objectVectors;
     private Dictionary<GameObject, Dictionary<Vector3, Vector2>> objectVectorTextureCoords; // Only contains texture coords where Vector3 is a hit
     private float elapsed_time = 0f;
+
+    // variables for blur effect optimization
+    private float avgR = 0;
+    private float avgG = 0;
+    private float avgB = 0;
+    private float avgA = 0;
+    private float blurPixelCount = 0;
 
     // For the aggregated viewpoint
     int time_increment = 1;
@@ -268,13 +280,15 @@ public class CreateBounds : MonoBehaviour
 
             // Apply texture changes to tempTexture
             tempTexture.Apply();
-            // Set GameObject's material.mainTexture to the tempTexture
-            rend.material.mainTexture = tempTexture;
+            // Set GameObject's material.mainTexture to the blurred tempTexture if blur active
+            if (BLUR_ACTIVE) rend.material.mainTexture = FastBlur(tempTexture, BLUR_RADIUS, BLUR_ITERS);
+            else rend.material.mainTexture = tempTexture;
 
         }
 
     }
 
+    // Currently inactive class. DrawOnObjectList currently takes care of individual objects.
     public void DrawOnObject(GameObject target, Vector2 pixelUV) 
     {
         Color color = Color.red;
@@ -334,7 +348,6 @@ public class CreateBounds : MonoBehaviour
         // Set GameObject's material.mainTexture to the tempTexture
         rend.material.mainTexture = tempTexture;
 
-
     }
 
     // Replaces target(s) textures with 1366x768 white textures.
@@ -347,5 +360,120 @@ public class CreateBounds : MonoBehaviour
         }
     }
 
+    // Optimized Blur
+    Texture2D FastBlur(Texture2D image, int radius, int iterations)
+    {
 
+        Texture2D tex = image;
+
+        for (var i = 0; i < iterations; i++)
+        {
+
+            tex = BlurImage(tex, radius, true);
+            tex = BlurImage(tex, radius, false);
+        }
+
+        return tex;
     }
+
+    // Base blur class
+    Texture2D BlurImage(Texture2D image, int blurSize, bool horizontal)
+    {
+        Texture2D blurred = new Texture2D(image.width, image.height);
+        int _W = image.width;
+        int _H = image.height;
+        int xx, yy, x, y;
+
+        if (horizontal)
+        {
+            for (yy = 0; yy < _H; yy++)
+            {
+                for (xx = 0; xx < _W; xx++)
+                {
+                    ResetPixel();
+
+                    //Right side of pixel
+                    for (x = xx; (x < xx + blurSize && x < _W); x++)
+                    {
+                        AddPixel(image.GetPixel(x, yy));
+                    }
+
+                    //Left side of pixel
+                    for (x = xx; (x > xx - blurSize && x > 0); x--)
+                    {
+                        AddPixel(image.GetPixel(x, yy));
+                    }
+
+                    CalcPixel();
+
+                    for (x = xx; x < xx + blurSize && x < _W; x++)
+                    {
+                        blurred.SetPixel(x, yy, new Color(avgR, avgG, avgB, 1.0f));
+                    }
+                }
+            }
+        } 
+        else
+        {
+            for (xx = 0; xx < _W; xx++)
+            {
+                for (yy = 0; yy < _H; yy++)
+                {
+                    ResetPixel();
+
+                    //Over pixel
+                    for (y = yy; (y < yy + blurSize && y < _H); y++)
+                    {
+
+                        AddPixel(image.GetPixel(xx, y));
+                    }
+
+                    //Under pixel
+                    for (y = yy; (y > yy - blurSize && y > 0); y--)
+                    {
+
+                        AddPixel(image.GetPixel(xx, y));
+                    }
+
+                    CalcPixel();
+
+                    for (y = yy; y < yy + blurSize && y < _H; y++)
+                    {
+
+                        blurred.SetPixel(xx, y, new Color(avgR, avgG, avgB, 1.0f));
+                    }
+                }
+            }
+        }
+
+        blurred.Apply();
+        return blurred;
+    }
+
+    void AddPixel(Color pixel)
+    {
+
+        avgR += pixel.r;
+        avgG += pixel.g;
+        avgB += pixel.b;
+        blurPixelCount++;
+    }
+
+    void ResetPixel()
+    {
+
+        avgR = 0.0f;
+        avgG = 0.0f;
+        avgB = 0.0f;
+        blurPixelCount = 0;
+    }
+
+    void CalcPixel()
+    {
+
+        avgR = avgR / blurPixelCount;
+        avgG = avgG / blurPixelCount;
+        avgB = avgB / blurPixelCount;
+    }
+
+}
